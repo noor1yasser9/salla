@@ -13,6 +13,7 @@ const output = (file = "") => path.resolve("public", file);
 module.exports = {
   entry: {
     app           : [asset("styles/app.scss"), asset("js/app.js")],
+    home          : asset("js/home.js"),
     "product-card": asset("js/partials/product-card.js"),
   },
   output: {
