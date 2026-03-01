@@ -18,22 +18,31 @@
   </div>
 
   {% if brands is defined and brands | length %}
-  <div class="brands-grid" style="margin-top:32px;">
-    {% for brand in brands %}
-    <a href="{{ brand.url }}" class="brand-card" style="flex-direction:column;gap:10px;padding:24px;" aria-label="{{ brand.name }}">
-      {% if brand.logo %}
-        <img src="{{ brand.logo }}" alt="{{ brand.name }}" loading="lazy" width="120" height="60" style="max-height:60px;object-fit:contain;filter:none;">
-      {% else %}
-        <div style="font-size:1.4rem;font-weight:700;color:var(--primary);">{{ brand.name }}</div>
-      {% endif %}
-      <span style="font-size:0.85rem;color:var(--text-muted);">{{ brand.name }}</span>
-    </a>
+    {% for char, brandGroup in brands %}
+    <div style="margin-top:40px;">
+      {# Alphabet separator #}
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+        <span style="font-size:1.4rem;font-weight:700;color:var(--primary);min-width:40px;">{{ char }}</span>
+        <div style="flex:1;height:1px;background:var(--border);"></div>
+      </div>
+      <div class="brands-grid">
+        {% for brand in brandGroup %}
+        <a href="{{ brand.url }}" class="brand-card" style="flex-direction:column;gap:10px;padding:24px;" aria-label="{{ brand.name }}">
+          {% if brand.logo %}
+            <img src="{{ brand.logo }}" alt="{{ brand.name }}" loading="lazy" width="120" height="60" style="max-height:60px;object-fit:contain;">
+          {% else %}
+            <div style="font-size:1.1rem;font-weight:700;color:var(--primary);">{{ brand.name }}</div>
+          {% endif %}
+          <span style="font-size:0.85rem;color:var(--text-muted);">{{ brand.name }}</span>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
     {% endfor %}
-  </div>
   {% else %}
   <div class="empty-state">
     <div class="empty-state-icon">🏷️</div>
-    <h3>{{ trans('brands.no_brands') }}</h3>
+    <h3>{{ trans('pages.brands.non_brands') }}</h3>
     <a href="{{ store.url }}" class="btn btn-primary">{{ trans('header.menu') }}</a>
   </div>
   {% endif %}
