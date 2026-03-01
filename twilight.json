@@ -1,102 +1,177 @@
 {
-  "name": "Salla Nova",
-  "version": "1.0.0",
-  "author": "Salla Developer",
-  "description": "A modern and clean Salla theme that displays products, categories, brands, and more.",
-  "settings": {
-    "colors": {
-      "primary": {
-        "label": "Primary Color",
-        "type": "color",
-        "default": "#6c63ff"
-      },
-      "secondary": {
-        "label": "Secondary Color",
-        "type": "color",
-        "default": "#ff6584"
-      },
-      "background": {
-        "label": "Background Color",
-        "type": "color",
-        "default": "#ffffff"
-      },
-      "text": {
-        "label": "Text Color",
-        "type": "color",
-        "default": "#333333"
-      }
+  "name": {
+    "ar": "نوفا",
+    "en": "Salla Nova"
+  },
+  "description": {
+    "ar": "قالب عصري وأنيق يعرض المنتجات والتصنيفات والماركات بشكل احترافي",
+    "en": "A modern and clean theme that displays products, categories, brands, and more."
+  },
+  "author_email": "support@salla.sa",
+  "repository": "https://github.com/noor1yasser9/salla",
+  "support_url": "https://salla.com/",
+  "features": [
+    "mega-menu",
+    "fonts",
+    "color",
+    "breadcrumb",
+    "filters"
+  ],
+  "settings": [
+    {
+      "type": "static",
+      "format": "title",
+      "id": "header-section-label",
+      "value": "إعدادات الهيدر"
     },
-    "typography": {
-      "font_family": {
-        "label": "Font Family",
-        "type": "select",
-        "default": "Cairo",
-        "options": [
-          { "value": "Cairo", "label": "Cairo" },
-          { "value": "Tajawal", "label": "Tajawal" },
-          { "value": "Almarai", "label": "Almarai" },
-          { "value": "Roboto", "label": "Roboto" }
-        ]
-      },
-      "base_font_size": {
-        "label": "Base Font Size",
-        "type": "range",
-        "default": 16,
-        "min": 12,
-        "max": 24
-      }
+    {
+      "id": "header_is_sticky",
+      "type": "boolean",
+      "format": "switch",
+      "icon": "sicon-toggle-off",
+      "label": "تثبيت الهيدر عند التمرير",
+      "description": null,
+      "required": false,
+      "value": true,
+      "selected": true
     },
-    "layout": {
-      "products_per_row": {
-        "label": "Products Per Row",
-        "type": "select",
-        "default": "4",
-        "options": [
-          { "value": "2", "label": "2 Products" },
-          { "value": "3", "label": "3 Products" },
-          { "value": "4", "label": "4 Products" }
-        ]
-      },
-      "show_breadcrumb": {
-        "label": "Show Breadcrumb",
-        "type": "checkbox",
-        "default": true
-      }
+    {
+      "id": "header_show_search",
+      "type": "boolean",
+      "format": "switch",
+      "icon": "sicon-toggle-off",
+      "label": "إظهار شريط البحث",
+      "description": null,
+      "required": false,
+      "value": true,
+      "selected": true
     },
-    "header": {
-      "sticky": {
-        "label": "Sticky Header",
-        "type": "checkbox",
-        "default": true
-      },
-      "show_search": {
-        "label": "Show Search Bar",
-        "type": "checkbox",
-        "default": true
-      }
+    {
+      "type": "static",
+      "format": "line",
+      "id": "line-1"
     },
-    "home": {
-      "show_banner": {
-        "label": "Show Hero Banner",
-        "type": "checkbox",
-        "default": true
-      },
-      "show_categories": {
-        "label": "Show Categories Section",
-        "type": "checkbox",
-        "default": true
-      },
-      "show_featured_products": {
-        "label": "Show Featured Products",
-        "type": "checkbox",
-        "default": true
-      },
-      "show_brands": {
-        "label": "Show Brands Section",
-        "type": "checkbox",
-        "default": true
-      }
+    {
+      "type": "static",
+      "format": "title",
+      "id": "home-section-label",
+      "value": "إعدادات الصفحة الرئيسية"
+    },
+    {
+      "id": "show_hero_banner",
+      "type": "boolean",
+      "format": "switch",
+      "icon": "sicon-toggle-off",
+      "label": "إظهار البانر الرئيسي",
+      "description": null,
+      "required": false,
+      "value": true,
+      "selected": true
+    },
+    {
+      "id": "show_categories",
+      "type": "boolean",
+      "format": "switch",
+      "icon": "sicon-toggle-off",
+      "label": "إظهار قسم التصنيفات",
+      "description": null,
+      "required": false,
+      "value": true,
+      "selected": true
+    },
+    {
+      "id": "show_featured_products",
+      "type": "boolean",
+      "format": "switch",
+      "icon": "sicon-toggle-off",
+      "label": "إظهار المنتجات المميزة",
+      "description": null,
+      "required": false,
+      "value": true,
+      "selected": true
+    },
+    {
+      "id": "show_brands",
+      "type": "boolean",
+      "format": "switch",
+      "icon": "sicon-toggle-off",
+      "label": "إظهار قسم الماركات",
+      "description": null,
+      "required": false,
+      "value": true,
+      "selected": true
+    },
+    {
+      "type": "static",
+      "format": "line",
+      "id": "line-2"
+    },
+    {
+      "type": "static",
+      "format": "title",
+      "id": "layout-section-label",
+      "value": "إعدادات التخطيط"
+    },
+    {
+      "id": "products_per_row",
+      "type": "items",
+      "format": "dropdown-list",
+      "icon": "sicon-list",
+      "label": "عدد المنتجات في الصف",
+      "description": null,
+      "required": true,
+      "source": "Manual",
+      "selected": [
+        { "label": "4 منتجات", "value": "4", "key": "per-row-4" }
+      ],
+      "options": [
+        { "label": "2 منتجات", "value": "2", "key": "per-row-2" },
+        { "label": "3 منتجات", "value": "3", "key": "per-row-3" },
+        { "label": "4 منتجات", "value": "4", "key": "per-row-4" }
+      ]
+    },
+    {
+      "id": "show_breadcrumb",
+      "type": "boolean",
+      "format": "switch",
+      "icon": "sicon-toggle-off",
+      "label": "إظهار مسار التصفح (Breadcrumb)",
+      "description": null,
+      "required": false,
+      "value": true,
+      "selected": true
+    },
+    {
+      "type": "static",
+      "format": "line",
+      "id": "line-3"
+    },
+    {
+      "type": "static",
+      "format": "title",
+      "id": "font-section-label",
+      "value": "إعدادات الخط"
+    },
+    {
+      "id": "font_family",
+      "type": "items",
+      "format": "dropdown-list",
+      "icon": "sicon-list",
+      "label": "نوع الخط",
+      "description": null,
+      "required": true,
+      "source": "Manual",
+      "selected": [
+        { "label": "Cairo", "value": "Cairo", "key": "font-cairo" }
+      ],
+      "options": [
+        { "label": "Cairo", "value": "Cairo", "key": "font-cairo" },
+        { "label": "Tajawal", "value": "Tajawal", "key": "font-tajawal" },
+        { "label": "Almarai", "value": "Almarai", "key": "font-almarai" },
+        { "label": "Roboto", "value": "Roboto", "key": "font-roboto" }
+      ]
     }
-  }
+  ],
+  "components": []
 }
 
