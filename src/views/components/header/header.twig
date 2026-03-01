@@ -1,159 +1,83 @@
-<header class="site-header" role="banner">
-  <div class="container">
-    <div class="header-inner">
+{#
+| Variable         | Type    | Description                     |
+|------------------|---------|---------------------------------|
+| cart             | object  |                                 |
+| cart.items_count | int     |                                 |
+| cart.total       | string  | Formatted total ex: "١٠٠ ر.س"   |
+#}
+{% set important_links = theme.settings.get('important_links') %}
+<header class="store-header">
+  {# Top Nav #}
+  <div class="top-navbar">
+    <div class="container flex justify-between">
+      <div class="flex-1 flex items-center gap-2">
+          {# Footer Menu #}
+          {% if important_links %}
+            <salla-menu source="footer" topnav></salla-menu>
+          {% endif %}
 
-      {# Logo #}
-      <a href="{{ store.url }}" class="header-logo" aria-label="{{ store.name }}">
-        {% if store.logo %}
-          <img src="{{ store.logo }}" alt="{{ store.name }}" width="160" height="48" loading="eager">
-        {% else %}
-          <span class="store-name">{{ store.name }}</span>
-        {% endif %}
-      </a>
+          {# Language & Currency Component #}
+          <div class="header-buttons">
+              {% if store.settings.is_multilingual or store.settings.currencies_enabled %}
+                  <button type="button" onclick="salla.event.dispatch('localization::open')" class="btn--rounded-gray basis-0">
+                      <span>{{ user.language.name }}</span>
+                      <span class="mx-1.5">|</span> <span>{{ currency.symbol }}</span>
+                  </button>
+                  <salla-localization-modal></salla-localization-modal>
+              {% endif %}
+          </div>
 
-      {# Search Bar (Desktop) #}
-      {% if theme.settings.get('header_show_search', true) %}
-      <form class="header-search" action="{{ store.url }}/search" method="get" role="search">
-        <i class="fas fa-search search-icon" aria-hidden="true"></i>
-        <input
-          type="search"
-          name="q"
-          placeholder="{{ trans('common.search_placeholder') }}"
-          value="{{ request.query.q }}"
-          autocomplete="off"
-          aria-label="{{ trans('common.search_placeholder') }}"
-        >
-      </form>
-      {% endif %}
+          {# Scopes | Branches #}
+          {% if store.scope %}
+              <button class="btn--rounded-gray"
+                      onclick="salla.event.dispatch('scopes::open', {'mode': 'default'})">
+                  <i class="sicon-location rtl:ml-1 ltr:mr-1"></i> {{ store.scope.name }}
+              </button>
+          {% endif %}
 
-      {# Header Actions #}
-      <div class="header-actions">
-
-        {# Mobile Search Toggle #}
-        <button class="header-action-btn search-toggle d-lg-none" aria-label="{{ trans('header.search') }}">
-          <i class="fas fa-search"></i>
-        </button>
-
-        {# Wishlist #}
-        <a href="{{ store.url }}/wishlist" class="header-action-btn" aria-label="{{ trans('header.wishlist') }}">
-          <salla-button fill="none" shape="icon" aria-label="{{ trans('header.wishlist') }}">
-            <i class="far fa-heart"></i>
-          </salla-button>
-          <span class="badge" id="wishlist-count">{{ customer.wishlist_count ?? 0 }}</span>
-          <span>{{ trans('header.wishlist') }}</span>
-        </a>
-
-        {# Cart #}
-        <a href="{{ store.url }}/cart" class="header-action-btn" aria-label="{{ trans('header.cart') }}">
-          <salla-cart-icon>
-            <i class="fas fa-shopping-cart"></i>
-          </salla-cart-icon>
-          <span>{{ trans('header.cart') }}</span>
-        </a>
-
-        {# Account #}
-        {% if customer %}
-          <a href="{{ store.url }}/customer/profile" class="header-action-btn" aria-label="{{ trans('header.account') }}">
-            <i class="far fa-user-circle"></i>
-            <span>{{ customer.first_name }}</span>
-          </a>
-        {% else %}
-          <a href="{{ store.url }}/customer/login" class="header-action-btn btn btn-primary btn-sm">
-            <i class="fas fa-sign-in-alt"></i>
-            {{ trans('header.login') }}
-          </a>
-        {% endif %}
-
-        {# Mobile Menu Toggle #}
-        <button class="header-action-btn mobile-menu-toggle d-xl-none" aria-label="{{ trans('header.menu') }}" aria-expanded="false">
-          <i class="fas fa-bars"></i>
-        </button>
-
+          {# Search bar #}
+          <div class="header-search flex-1">
+            <salla-search inline oval height="36"></salla-search>
+          </div>
       </div>
+
+      <salla-contacts is-header></salla-contacts>
     </div>
   </div>
 
-  {# Mobile Search Bar #}
-  <div class="header-search-mobile">
-    <div class="container">
-      <form action="{{ store.url }}/search" method="get">
-        <input type="search" name="q" placeholder="{{ trans('common.search_placeholder') }}" value="{{ request.query.q }}">
-        <button type="submit"><i class="fas fa-search"></i></button>
-      </form>
-    </div>
+  {# Main Nav #}
+  <div id="mainnav" class="main-nav-container shadow-default bg-white flex items-center">
+      <div class="inner bg-inherit w-full">
+          <div class="container">
+              <div class="flex items-stretch justify-between relative">
+                  <div class="flex items-center">
+                      <a class="lg:hidden mburger mburger--collapse leading-none rtl:ml-4 ltr:mr-4" href="#mobile-menu" aria-label="Open-menu">
+                        <i class="sicon-menu text-primary text-2xl"></i>
+                      </a>
+                      <a class="navbar-brand" href="{{ store.url }}">
+                          <img fetchpriority="high" width="100%" height="100%" loading="eager" src="{{ store.logo|cdn(175) }}" alt="{{ store.name }} logo">
+                          {% if is_page('index') %}
+                            <h1 class="sr-only">{{ store.name }}</h1>
+                          {% else %}
+                            <h2 class="sr-only">{{ store.name }}</h2>
+                          {% endif %}
+                      </a>
+                      <custom-main-menu></custom-main-menu>
+                  </div>
+                  <div class="flex items-center justify-end my-2.5">
+                      {% if user.type=='user' %}
+                        <salla-user-menu avatar-only show-header></salla-user-menu>
+                      {% else %}
+                          <button class="header-btn" aria-label="user-icon" onclick="salla.event.dispatch('login::open')">
+                            <i class="header-btn__icon sicon-user-circle"></i>
+                          </button>
+                      {% endif %}
+                      <salla-cart-summary class="ml-4 rtl:ml-[unset] rtl:mr-4">
+                        <i slot="icon" class="header-btn__icon icon sicon-shopping-bag"></i>
+                      </salla-cart-summary>
+                  </div>
+              </div>
+          </div>
+      </div>
   </div>
 </header>
-
-{# Navigation Bar #}
-<nav class="site-nav" aria-label="Main navigation">
-  <div class="container">
-    <ul class="nav-inner" role="list">
-
-      {# All Categories Mega-Menu Trigger #}
-      <li class="nav-item">
-        <a href="{{ store.url }}/categories" class="nav-link">
-          <i class="fas fa-th-large"></i> {{ trans('header.categories') }}
-        </a>
-        {% if categories is defined and categories|length %}
-        <div class="nav-dropdown">
-          {% for category in categories %}
-            <a href="{{ category.url }}">
-              {% if category.image %}<img src="{{ category.image }}" alt="{{ category.name }}" width="20" height="20" loading="lazy">{% endif %}
-              {{ category.name }}
-            </a>
-          {% endfor %}
-        </div>
-        {% endif %}
-      </li>
-
-      {# Store Menu Links #}
-      {% if menus is defined %}
-        {% for item in menus %}
-        <li class="nav-item">
-          <a href="{{ item.url }}" class="nav-link {% if request.url == item.url %}active{% endif %}">
-            {{ item.name }}
-            {% if item.children is defined and item.children|length %}
-              <i class="fas fa-chevron-down" style="font-size:0.7rem;"></i>
-            {% endif %}
-          </a>
-          {% if item.children is defined and item.children|length %}
-          <div class="nav-dropdown">
-            {% for child in item.children %}
-              <a href="{{ child.url }}">{{ child.name }}</a>
-            {% endfor %}
-          </div>
-          {% endif %}
-        </li>
-        {% endfor %}
-      {% endif %}
-
-      {# Brands Link #}
-      <li class="nav-item">
-        <a href="{{ store.url }}/brands" class="nav-link">{{ trans('header.brands') }}</a>
-      </li>
-
-    </ul>
-  </div>
-</nav>
-
-{# Mobile Navigation Drawer #}
-<div class="mobile-nav" aria-hidden="true">
-  <div class="mobile-nav-header">
-    <span class="mobile-nav-title">{{ trans('header.menu') }}</span>
-    <button class="mobile-menu-toggle" aria-label="{{ trans('common.close') }}"><i class="fas fa-times"></i></button>
-  </div>
-  <ul>
-    <li><a href="{{ store.url }}"><i class="fas fa-home"></i> الرئيسية</a></li>
-    <li><a href="{{ store.url }}/categories"><i class="fas fa-th"></i> {{ trans('header.categories') }}</a></li>
-    <li><a href="{{ store.url }}/brands"><i class="fas fa-award"></i> {{ trans('header.brands') }}</a></li>
-    {% if customer %}
-      <li><a href="{{ store.url }}/customer/profile"><i class="far fa-user"></i> {{ trans('customer.profile') }}</a></li>
-      <li><a href="{{ store.url }}/orders"><i class="fas fa-box"></i> {{ trans('orders.title') }}</a></li>
-      <li><a href="{{ store.url }}/wishlist"><i class="far fa-heart"></i> {{ trans('customer.wishlist') }}</a></li>
-    {% else %}
-      <li><a href="{{ store.url }}/customer/login"><i class="fas fa-sign-in-alt"></i> {{ trans('header.login') }}</a></li>
-    {% endif %}
-  </ul>
-</div>
-<div class="mobile-nav-overlay"></div>
-

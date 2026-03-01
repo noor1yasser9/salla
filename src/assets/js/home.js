@@ -1,40 +1,30 @@
-/**
- * Salla Nova - Home Page JS
- * Handles featured products tabs on the home page
- */
+import "lite-youtube-embed";
+import BasePage from "./base-page";
+import Lightbox from "fslightbox";
+window.fslightbox = Lightbox;
 
-function initFeaturedTabs() {
-  document.querySelectorAll('.tab-trigger').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const componentId = btn.dataset.componentId;
-      const target      = btn.dataset.target;
-      const wrapper     = document.getElementById(componentId);
-      if (!wrapper) return;
+class Home extends BasePage {
+    onReady() {
+        this.initFeaturedTabs();
+    }
 
-      // Update tab buttons
-      wrapper.querySelectorAll('.tab-trigger').forEach(b => b.classList.remove('is-active'));
-      btn.classList.add('is-active');
+    /**
+     * used in views/components/home/featured-products-style*.twig
+     */
+    initFeaturedTabs() {
+        app.all('.tab-trigger', el => {
+            el.addEventListener('click', ({ currentTarget: btn }) => {
+                let id = btn.dataset.componentId;
+                // btn.setAttribute('fill', 'solid');
+                app.toggleClassIf(`#${id} .tabs-wrapper>div`, 'is-active opacity-0 translate-y-3', 'inactive', tab => tab.id == btn.dataset.target)
+                    .toggleClassIf(`#${id} .tab-trigger`, 'is-active', 'inactive', tabBtn => tabBtn == btn);
 
-      // Hide all tabs
-      wrapper.querySelectorAll('.tabs-wrapper > div').forEach(tab => {
-        tab.classList.remove('is-active', 'opacity-100', 'translate-y-0');
-        tab.classList.add('opacity-0', 'translate-y-3');
-      });
-
-      // Show active tab with animation
-      const activeTab = wrapper.querySelector(`#${target}`);
-      if (activeTab) {
-        activeTab.classList.add('is-active');
-        setTimeout(() => {
-          activeTab.classList.remove('opacity-0', 'translate-y-3');
-          activeTab.classList.add('opacity-100', 'translate-y-0');
-        }, 100);
-      }
-    });
-  });
-
-  document.querySelectorAll('.s-block-tabs').forEach(block => block.classList.add('tabs-initialized'));
+                // fadeIn active tabe
+                setTimeout(() => app.toggleClassIf(`#${id} .tabs-wrapper>div`, 'opacity-100 translate-y-0', 'opacity-0 translate-y-3', tab => tab.id == btn.dataset.target), 100);
+            })
+        });
+        document.querySelectorAll('.s-block-tabs').forEach(block => block.classList.add('tabs-initialized'));
+    }
 }
 
-document.addEventListener('DOMContentLoaded', initFeaturedTabs);
-
+Home.initiateWhenReady(['index']);

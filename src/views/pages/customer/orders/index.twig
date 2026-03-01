@@ -1,77 +1,21 @@
-{% extends 'layouts.master' %}
-
-{% block title %}{{ trans('orders.title') }} | {{ store.name }}{% endblock %}
-
-{% block content %}
-<div class="container customer-page">
-  <div class="customer-grid">
-
-    {# Sidebar #}
-    <aside class="customer-sidebar">
-      <nav class="customer-nav">
-        <a href="{{ store.url }}/customer/profile"><i class="fas fa-user"></i> {{ trans('customer.profile') }}</a>
-        <a href="{{ store.url }}/orders" class="active"><i class="fas fa-box"></i> {{ trans('orders.title') }}</a>
-        <a href="{{ store.url }}/wishlist"><i class="far fa-heart"></i> {{ trans('customer.wishlist') }}</a>
-        <a href="{{ store.url }}/customer/notifications"><i class="fas fa-bell"></i> {{ trans('customer.notifications') }}</a>
-      </nav>
-    </aside>
-
-    {# Orders Content #}
-    <div class="customer-content">
-      <h2 style="font-size:1.4rem;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid var(--primary);">{{ trans('orders.title') }}</h2>
-
-      {% if orders is defined and orders | length %}
-      <div style="overflow-x:auto;">
-        <table class="orders-table">
-          <thead>
-            <tr>
-              <th>{{ trans('orders.order_id') }}</th>
-              <th>{{ trans('orders.order_date') }}</th>
-              <th>{{ trans('orders.order_status') }}</th>
-              <th>المنتجات</th>
-              <th>{{ trans('orders.order_total') }}</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for order in orders %}
-            <tr>
-              <td><strong>#{{ order.reference_id | default(order.id) }}</strong></td>
-              <td>{{ order.date | date("d/m/Y") }}</td>
-              <td>
-                <span class="order-status status-{{ order.status | lower | replace({' ':'-'}) }}">
-                  {{ order.status_name | default(order.status) }}
-                </span>
-              </td>
-              <td>
-                <div style="display:flex;gap:-8px;">
-                  {% for item in order.items | slice(0, 3) %}
-                    <img src="{{ item.product.thumbnail }}" alt="{{ item.product.name }}" style="width:36px;height:36px;border-radius:4px;border:2px solid #fff;margin-inline-start:-6px;object-fit:cover;" loading="lazy">
-                  {% endfor %}
-                  {% if order.items | length > 3 %}
-                    <span style="width:36px;height:36px;border-radius:4px;background:var(--bg-alt);display:flex;align-items:center;justify-content:center;font-size:0.75rem;margin-inline-start:-6px;">+{{ order.items | length - 3 }}</span>
-                  {% endif %}
-                </div>
-              </td>
-              <td><strong>{{ order.total | money }}</strong></td>
-              <td>
-                <a href="{{ store.url }}/orders/{{ order.id }}" class="btn btn-outline btn-sm">{{ trans('orders.view_order') }}</a>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% else %}
-        <div class="empty-state">
-          <div class="empty-state-icon">📦</div>
-          <h3>{{ trans('orders.no_orders') }}</h3>
-          <a href="{{ store.url }}/products" class="btn btn-primary">ابدأ التسوق</a>
+{#
+| Variable          | Type                 | Description |
+|-------------------|----------------------|-------------|
+| page              | object               |             |
+| page.title        | string               |             |
+| page.slug         | string               |             |
+| orders[]          | Orders[] *Collection |             |
+#}
+{% extends "layouts.customer" %}
+{% block inner_content %}
+    {% if orders|length %}
+        {% hook 'customer:orders.index.items.start' %}
+          <salla-orders></salla-orders>
+        {% hook 'customer:orders.index.items.end' %}
+    {% else %}
+        <div class="no-content-placeholder">
+            <i class="sicon-packed-box icon"></i>
+            <p>{{ trans('pages.orders.non_orders') }}</p>
         </div>
-      {% endif %}
-    </div>
-
-  </div>
-</div>
+    {% endif %}
 {% endblock %}
-

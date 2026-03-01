@@ -1,155 +1,78 @@
-{% extends 'layouts.master' %}
-
-{% block title %}
-  {% if category is defined %}{{ category.name }} - {% endif %}{{ trans('header.categories') }} | {{ store.name }}
-{% endblock %}
-{% block description %}
-  {% if category is defined %}{{ category.description }}{% else %}{{ store.description }}{% endif %}
-{% endblock %}
-
+{#
+| Variable                   | Type        | Description                                                          |
+|----------------------------|-------------|----------------------------------------------------------------------|
+| page                       | object      |                                                                      |
+| page.title                 | string      | *could be html                                                       |
+| page.slug                  | string      | ex: "cat.show"                                                       |
+| category                   | ?Category   |                                                                      |
+| category.name              | string      |                                                                      |
+| category.url               | string      |                                                                      |
+| category.sub_categories    | ?Category[] |                                                                      |
+| category.image             | ?string     |                                                                      |
+| filters                     | bool        | is filters allowed here or not                                        |
+| sort_options[]             | SortList[]  |                                                                      |
+| sort_options[].id          | string      | ourSuggest, bestSell, topRated, priceFromTopToLow, priceFromLowToTop |
+| sort_options[].name        | string      |                                                                      |
+| sort_options[].is_selected | bool        | Is current page sorted by it                                         |
+| search_query               | ?string     |                                                                      |
+#}
+{% extends "layouts.master" %}
 {% block content %}
-<div class="container">
+    <div class="container px-2.5 ms:px-5 mb-10">
+        {# add breadcumbs container in pages to make a space in case breadcrumbs is off #}
+        <nav class="breadcrumbs w-full py-5">
+            <salla-breadcrumb></salla-breadcrumb>
+        </nav>
+        <div class="flex items-start flex-col md:flex-row">
+            {% if filters %}
+                <button class="btn--close-sm close-filters sicon-cancel hidden"></button>
+                <salla-filters class="md:w-72 lg:sticky lg:top-20 flex-none" id="filters-menu"></salla-filters>
+            {% endif %}
 
-  {# Breadcrumb #}
-  {% if theme.settings.get('show_breadcrumb', true) %}
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <ol class="breadcrumb-list">
-      <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
-      {% if category is defined and category.parent is defined %}
-        <li class="breadcrumb-item"><a href="{{ category.parent.url }}">{{ category.parent.name }}</a></li>
-      {% endif %}
-      {% if category is defined %}
-        <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
-      {% else %}
-        <li class="breadcrumb-item active" aria-current="page">{{ trans('header.categories') }}</li>
-      {% endif %}
-    </ol>
-  </nav>
-  {% endif %}
+            <div class="main-content flex-1 w-full {{ filters ? 'ltr:lg:ml-8 rtl:lg:mr-8' : '' }}">
+                <div class="mb-4 sm:mb-6 flex justify-between items-center">
+                    <h1 class="font-bold text-xl rtl:pl-3 ltr:pr-3" id="page-main-title">{{ page.title|raw }}</h1>
+                    <div class="flex items-center space-x-2 rtl:space-x-reverse">
+                        {% if filters %}
+                            <a href="#filters-menu"
+                               class="filters-trigger bg-border-color text-primary lg:hidden mt-2">
+                                <i class="sicon-filter text-gray-text text-2xl me-2.5"></i>
+                            </a>
+                        {% endif %}
+                        {% if sort_options|length %}
+                            <div class="flex items-center">
+                                <label class="hidden sm:block rtl:ml-3 ltr:mr-3 whitespace-nowrap"
+                                       for="product-filter">{{ trans('pages.categories.sorting') }}</label>
+                                <select id="product-filter" class="form-input pt-0 pb-1 rtl:md:pl-10 ltr:md:pr-10">
+                                    {% for sort in sort_options %}
+                                        <option value="{{ sort.id }}" {{ sort.is_selected?'selected':'' }}>{{ sort.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endif %}
+                    </div>
 
-  {# Mobile Filter Button - always visible on mobile #}
-  <div class="mobile-filter-bar">
-    <button class="btn btn-outline btn-sm filters-toggle" aria-expanded="false" aria-controls="filters-sidebar">
-      <i class="fas fa-sliders-h"></i> الفلاتر
-    </button>
-    {% if products is defined %}
-      <span style="font-size:0.875rem;color:var(--text-muted);">{{ products | length }} منتج</span>
-    {% endif %}
-  </div>
+                </div>
 
-  <div class="products-layout" style="display:grid;grid-template-columns:260px 1fr;gap:32px;padding:32px 0;">
-
-    {# ── Sidebar Filters ───────────────────────────────────────────────── #}
-    <aside class="filters-sidebar" id="filters-sidebar" aria-label="Filters">
-
-      {# Category Info #}
-      {% if category is defined %}
-      <div style="margin-bottom:24px;">
-        {% if category.image %}
-          <img src="{{ category.image }}" alt="{{ category.name }}" style="width:100%;border-radius:var(--radius);margin-bottom:12px;">
-        {% endif %}
-        <h2 style="font-size:1.2rem;">{{ category.name }}</h2>
-        {% if category.description %}
-          <p style="font-size:0.875rem;color:var(--text-muted);margin-top:8px;">{{ category.description }}</p>
-        {% endif %}
-      </div>
-      {% endif %}
-
-      {# Sub-categories #}
-      {% if sub_categories is defined and sub_categories | length %}
-      <div class="filter-group" style="margin-bottom:24px;">
-        <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primary);">التصنيفات الفرعية</h3>
-        <ul>
-          {% for sub in sub_categories %}
-          <li>
-            <a href="{{ sub.url }}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;font-size:0.875rem;border-bottom:1px solid var(--border);">
-              <span>{{ sub.name }}</span>
-              {% if sub.products_count is defined %}
-                <span style="background:var(--bg-alt);border-radius:50px;padding:2px 8px;font-size:0.75rem;">{{ sub.products_count }}</span>
-              {% endif %}
-            </a>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-
-      {# Price Filter #}
-      <div class="filter-group" style="margin-bottom:24px;">
-        <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primary);">السعر</h3>
-        <salla-price-filter></salla-price-filter>
-      </div>
-
-      {# Brand Filter #}
-      {% if brands is defined and brands | length %}
-      <div class="filter-group" style="margin-bottom:24px;">
-        <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primary);">{{ trans('header.brands') }}</h3>
-        <ul>
-          {% for brand in brands %}
-          <li style="margin-bottom:6px;">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.875rem;">
-              <input type="checkbox" name="brand[]" value="{{ brand.id }}"> {{ brand.name }}
-            </label>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
-      {% endif %}
-
-    </aside>
-
-    {# ── Products Main Area ────────────────────────────────────────────── #}
-    <div>
-
-      {# Toolbar - desktop only #}
-      <div class="products-toolbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding:16px;background:var(--bg-alt);border-radius:var(--radius);flex-wrap:wrap;gap:12px;">
-        <div>
-          {% if products is defined %}
-            <span style="font-size:0.9rem;color:var(--text-muted);">{{ products | length }} منتج</span>
-          {% endif %}
+                {% hook 'product:index.items.start' %}
+                <div class="flex min-h-screen">
+                    <salla-products-list class="flex-1 min-w-0 overflow-auto "
+                        source="{{ page.slug }}"
+                        source-value="{{ page.id }}"
+                        {{ filters ?'filters-Results':'' }}>
+					          </salla-products-list>
+                </div>
+                {% hook 'product:index.items.end' %}
+            </div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <label style="font-size:0.875rem;color:var(--text-muted);">ترتيب:</label>
-          <select style="padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.875rem;" onchange="window.location.href=this.value">
-            <option value="?sort=newest" {% if request.query.sort == 'newest' %}selected{% endif %}>الأحدث</option>
-            <option value="?sort=price_asc" {% if request.query.sort == 'price_asc' %}selected{% endif %}>السعر: الأقل</option>
-            <option value="?sort=price_desc" {% if request.query.sort == 'price_desc' %}selected{% endif %}>السعر: الأعلى</option>
-            <option value="?sort=bestselling" {% if request.query.sort == 'bestselling' %}selected{% endif %}>الأكثر مبيعاً</option>
-            <option value="?sort=featured" {% if request.query.sort == 'featured' %}selected{% endif %}>المميزة</option>
-          </select>
-          {# Grid / List Toggle #}
-          <div style="display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
-            <button class="btn btn-sm view-toggle active" data-view="grid" title="عرض شبكي" style="border-radius:0;border:none;"><i class="fas fa-th-large"></i></button>
-            <button class="btn btn-sm view-toggle" data-view="list" title="عرض قائمة" style="border-radius:0;border:none;border-right:1px solid var(--border);"><i class="fas fa-list"></i></button>
-          </div>
-        </div>
-      </div>
-
-      {# Products Grid #}
-      {% include 'pages/partials/product/grid.twig' with { 'products': products } %}
-
-      {# Pagination #}
-      {% if pagination is defined %}
-      <nav class="pagination" aria-label="Pagination">
-        {% if pagination.prev_url %}
-          <a href="{{ pagination.prev_url }}" class="page-btn" aria-label="Previous">
-            <i class="fas fa-chevron-right"></i>
-          </a>
-        {% endif %}
-        {% for page in pagination.pages %}
-          <a href="{{ page.url }}" class="page-btn {% if page.active %}active{% endif %}" aria-current="{{ page.active ? 'page' : 'false' }}">
-            {{ page.number }}
-          </a>
-        {% endfor %}
-        {% if pagination.next_url %}
-          <a href="{{ pagination.next_url }}" class="page-btn" aria-label="Next">
-            <i class="fas fa-chevron-left"></i>
-          </a>
-        {% endif %}
-      </nav>
-      {% endif %}
-
     </div>
-  </div>
-</div>
+
+
+    {% if store.settings.category.testimonial_enabled %}
+        {% component 'home.testimonials' %}
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script defer src="{{ 'product.js' | asset }}"></script>
 {% endblock %}
