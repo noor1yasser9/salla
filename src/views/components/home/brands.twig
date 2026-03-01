@@ -1,0 +1,44 @@
+{#
+| Variable          | Type    | Description             |
+|-------------------|---------|-------------------------|
+| component.brands  | Brand[] | list of selected brands |
+| component.title   | string  | Section title           |
+| position          | int     | Block position index    |
+#}
+<section class="s-block" style="padding:48px 0;background:#f8f9fa;">
+    <div style="max-width:1280px;margin:0 auto;padding:0 20px;">
+
+        {% if component.title %}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
+            <h2 style="font-size:1.6rem;font-weight:700;position:relative;">
+                {{ component.title }}
+                <span style="display:block;width:48px;height:4px;background:var(--color-primary,#1d6ae5);border-radius:2px;margin-top:8px;"></span>
+            </h2>
+            {% if theme.settings.get('is_more_button_enabled') %}
+                <a href="{{ link('brands') }}"
+                   style="padding:8px 20px;border:2px solid var(--color-primary,#1d6ae5);border-radius:6px;color:var(--color-primary,#1d6ae5);font-weight:600;font-size:0.875rem;">
+                    {{ trans('blocks.home.display_all') }}
+                </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div style="display:grid;grid-template-columns:repeat({{ component.brands|length > 5 ? '6' : '5' }},1fr);gap:16px;">
+            {% for brand in component.brands %}
+                <a href="{{ brand.url }}"
+                   style="display:flex;align-items:center;justify-content:center;padding:20px;background:#fff;border-radius:12px;border:1px solid #e9ecef;transition:all 0.25s;min-height:90px;"
+                   onmouseover="this.style.borderColor='var(--color-primary,#1d6ae5)';this.style.boxShadow='0 4px 16px rgba(0,0,0,0.1)'"
+                   onmouseout="this.style.borderColor='#e9ecef';this.style.boxShadow='none'">
+                    <img src="{{ brand.logo }}"
+                         alt="{{ brand.name }}"
+                         style="max-height:52px;width:auto;object-fit:contain;filter:grayscale(1);transition:filter 0.25s;"
+                         onmouseover="this.style.filter='grayscale(0)'"
+                         onmouseout="this.style.filter='grayscale(1)'"
+                         loading="lazy">
+                </a>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+

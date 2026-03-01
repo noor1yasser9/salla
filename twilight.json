@@ -172,6 +172,173 @@
       ]
     }
   ],
-  "components": []
+  "components": [
+    {
+      "key": "a1b2c3d4-0001-4abc-8000-111111111111",
+      "title": { "ar": "صور متحركة (سليدر)", "en": "Hero Slider" },
+      "icon": "sicon-image-carousel",
+      "path": "home.enhanced-slider",
+      "fields": [
+        {
+          "id": "slides",
+          "type": "collection",
+          "format": "collection",
+          "required": true,
+          "minLength": 1,
+          "maxLength": 8,
+          "item_label": "صورة",
+          "value": [
+            {
+              "slides.image": "https://cdn.salla.sa/ZrBEO/MopzhoqpTkDObcKc8Q8n77AuydanfsGXdZO7iinH.jpg",
+              "slides.title": "مرحباً بك في متجرنا",
+              "slides.description": "اكتشف أفضل المنتجات بأسعار لا تُقاوم",
+              "slides.without_overlay": false
+            }
+          ],
+          "fields": [
+            {
+              "id": "slides.image",
+              "type": "string",
+              "format": "image",
+              "label": "صورة البنر",
+              "required": true,
+              "description": "المقاس المناسب 1440×600 بكسل"
+            },
+            {
+              "id": "slides.title",
+              "type": "string",
+              "format": "text",
+              "label": "العنوان",
+              "multilanguage": true,
+              "required": false,
+              "placeholder": "أدخل العنوان هنا...",
+              "maxLength": 100
+            },
+            {
+              "id": "slides.description",
+              "type": "string",
+              "format": "textarea",
+              "label": "النص التوضيحي",
+              "multilanguage": true,
+              "required": false,
+              "placeholder": "أدخل وصفاً مختصراً...",
+              "maxLength": 255
+            },
+            {
+              "id": "slides.without_overlay",
+              "type": "boolean",
+              "format": "switch",
+              "label": "إزالة طبقة التعتيم",
+              "value": false,
+              "selected": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "a1b2c3d4-0002-4abc-8000-222222222222",
+      "title": { "ar": "منتجات مميزة", "en": "Featured Products" },
+      "icon": "sicon-list-play",
+      "path": "home.featured-products-style1",
+      "fields": [
+        {
+          "id": "title",
+          "type": "string",
+          "format": "text",
+          "label": "عنوان القسم",
+          "multilanguage": true,
+          "required": false,
+          "placeholder": "مثال: منتجات مميزة",
+          "maxLength": 100,
+          "value": { "ar": "منتجات مميزة", "en": "Featured Products" }
+        },
+        {
+          "id": "items",
+          "type": "collection",
+          "format": "collection",
+          "required": true,
+          "minLength": 1,
+          "maxLength": 5,
+          "item_label": "تبويب",
+          "value": [
+            { "items.title": "الأكثر مبيعاً", "items.type": "most_sales" },
+            { "items.title": "وصل حديثاً",   "items.type": "latest_products" }
+          ],
+          "fields": [
+            {
+              "id": "items.title",
+              "type": "string",
+              "format": "text",
+              "label": "عنوان التبويب",
+              "multilanguage": true,
+              "required": true,
+              "placeholder": "عنوان التبويب...",
+              "maxLength": 60
+            },
+            {
+              "id": "items.type",
+              "type": "items",
+              "format": "dropdown-list",
+              "label": "نوع المنتجات",
+              "required": true,
+              "source": "Manual",
+              "selected": [{ "label": "الأكثر مبيعاً", "value": "most_sales", "key": "most_sales" }],
+              "options": [
+                { "label": "الأكثر مبيعاً",   "value": "most_sales",        "key": "most_sales" },
+                { "label": "وصل حديثاً",       "value": "latest_products",   "key": "latest_products" },
+                { "label": "منتجات مختارة",    "value": "chosen_products",   "key": "chosen_products" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "display_all_url",
+          "type": "items",
+          "format": "variable-list",
+          "label": "رابط عرض الكل",
+          "required": false,
+          "searchable": true,
+          "source": "custom",
+          "sources": [
+            { "label": "تصنيف",         "key": "categories",  "value": "categories" },
+            { "label": "التخفيضات",     "key": "offers_link", "value": "offers_link" },
+            { "label": "رابط خارجي",    "key": "custom",      "value": "custom" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "a1b2c3d4-0003-4abc-8000-333333333333",
+      "title": { "ar": "الماركات التجارية", "en": "Brands" },
+      "icon": "sicon-award-ribbon",
+      "path": "home.brands",
+      "fields": [
+        {
+          "id": "title",
+          "type": "string",
+          "format": "text",
+          "label": "العنوان",
+          "multilanguage": true,
+          "required": false,
+          "placeholder": "مثال: تسوق حسب الماركة",
+          "maxLength": 200,
+          "value": { "ar": "الماركات التجارية", "en": "Our Brands" }
+        },
+        {
+          "id": "brands",
+          "type": "items",
+          "format": "dropdown-list",
+          "label": "اختر الماركات",
+          "required": true,
+          "multichoice": true,
+          "searchable": true,
+          "source": "brands",
+          "selected": [],
+          "options": []
+        }
+      ]
+    }
+  ]
 }
 
