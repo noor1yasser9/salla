@@ -3,6 +3,10 @@ const CssMinimizerPlugin   = require("css-minimizer-webpack-plugin");
 const CopyPlugin           = require("copy-webpack-plugin");
 const path                 = require("path");
 
+// ThemeWatcher is only available in Salla's CI/CD environment
+let ThemeWatcher;
+try { ThemeWatcher = require("@salla.sa/twilight/watcher.js"); } catch (e) { ThemeWatcher = class { apply() {} }; }
+
 const asset  = (file = "") => path.resolve("src/assets", file);
 const output = (file = "") => path.resolve("public", file);
 
@@ -14,8 +18,9 @@ module.exports = {
   output: {
     path : output(),
     clean: true,
+    chunkFilename: "[name].[contenthash].js",
   },
-  stats: { modules: false, assetsSort: "size" },
+  stats: { modules: false, assetsSort: "size", assetsSpace: 50 },
   module: {
     rules: [
       {
@@ -41,6 +46,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new ThemeWatcher(),
     new MiniCssExtractPlugin(),
     new CopyPlugin({
       patterns: [{ from: asset("images"), to: output("images"), noErrorOnMissing: true }],

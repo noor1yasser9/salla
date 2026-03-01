@@ -30,7 +30,7 @@
 <div class="container">
 
   {# Breadcrumb #}
-  {% if settings.layout.show_breadcrumb %}
+  {% if theme.settings.get('show_breadcrumb', true) %}
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <ol class="breadcrumb-list">
       <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
@@ -227,7 +227,7 @@
       <div class="section-header">
         <h2 class="section-title" id="related-products-title">{{ trans('product.related_products') }}</h2>
       </div>
-      {% include 'components/product/grid.twig' with { 'products': related_products } %}
+      {% include 'pages/partials/product/grid.twig' with { 'products': related_products } %}
     </section>
     {% endif %}
 

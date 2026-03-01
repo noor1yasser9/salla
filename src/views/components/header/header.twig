@@ -12,7 +12,7 @@
       </a>
 
       {# Search Bar (Desktop) #}
-      {% if settings.header.show_search %}
+      {% if theme.settings.get('header_show_search', true) %}
       <form class="header-search" action="{{ store.url }}/search" method="get" role="search">
         <i class="fas fa-search search-icon" aria-hidden="true"></i>
         <input

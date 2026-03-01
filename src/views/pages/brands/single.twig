@@ -36,7 +36,7 @@
     <h2 class="section-title">منتجات {{ brand.name }}</h2>
   </div>
 
-  {% include 'components/product/grid.twig' with { 'products': products } %}
+  {% include 'pages/partials/product/grid.twig' with { 'products': products } %}
 
   {# Pagination #}
   {% if pagination is defined %}

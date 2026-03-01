@@ -11,7 +11,7 @@
 <div class="container">
 
   {# Breadcrumb #}
-  {% if settings.layout.show_breadcrumb %}
+  {% if theme.settings.get('show_breadcrumb', true) %}
   <nav class="breadcrumb" aria-label="Breadcrumb">
     <ol class="breadcrumb-list">
       <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
@@ -121,7 +121,7 @@
       </div>
 
       {# Products Grid #}
-      {% include 'components/product/grid.twig' with { 'products': products } %}
+      {% include 'pages/partials/product/grid.twig' with { 'products': products } %}
 
       {# Pagination #}
       {% if pagination is defined %}

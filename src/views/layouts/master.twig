@@ -1,82 +1,75 @@
 <!DOCTYPE html>
-<html lang="{{ store.language }}" dir="{{ store.direction }}">
+<html lang="{{ user.language.code }}" dir="{{ user.language.dir }}">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {{ theme.settings.set('placeholder', 'images/placeholder.png') }}
 
-  {# SEO Meta #}
-  <title>{% block title %}{{ store.name }}{% endblock %}</title>
-  <meta name="description" content="{% block description %}{{ store.description }}{% endblock %}">
-  <meta name="keywords" content="{% block keywords %}{% endblock %}">
+    {# Salla required scripts - must load early #}
+    <script defer data-cfasync="false" crossorigin="anonymous" src="{{ 'product-card.js' | asset }}"></script>
 
-  {# Open Graph #}
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="{% block og_title %}{{ store.name }}{% endblock %}">
-  <meta property="og:description" content="{% block og_description %}{{ store.description }}{% endblock %}">
-  <meta property="og:image" content="{% block og_image %}{{ store.logo }}{% endblock %}">
-  <meta property="og:url" content="{{ request.url }}">
-  <meta property="og:site_name" content="{{ store.name }}">
+    {% block head_scripts %}{% endblock %}
 
-  {# Twitter Card #}
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ store.name }}">
-  <meta name="twitter:image" content="{{ store.logo }}">
+    <script data-cfasync="false">
+        window.header_is_sticky = "{{ theme.settings.get('header_is_sticky', true) }}"
+        window.can_access_wallet  = {{ user.can_access_wallet | json_encode }}
+    </script>
 
-  {# Favicon #}
-  <link rel="icon" type="image/png" href="{{ store.favicon ?? store.logo }}">
-  <link rel="canonical" href="{{ request.url }}">
+    {% hook 'head:start' %}
+    {% hook head %}
 
-  {# Fonts #}
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    {% block styles %}{% endblock %}
 
-  {# Icons #}
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {# Theme compiled CSS #}
+    <link rel="stylesheet" href="{{ 'app.css' | asset }}">
 
-  {# Theme Styles #}
-  <link rel="stylesheet" href="{{ 'styles/theme.css' | asset }}">
+    {# Salla font + icons #}
+    <link rel="stylesheet" href="{{ theme.font.path | cdn }}"/>
+    <link rel="stylesheet" href="{{ 'fonts/sallaicons.css' | cdn }}"/>
 
-  {# Salla Theme CSS Variables (from twilight.json settings) #}
-  <style>
-    :root {
-      --primary: {{ settings.colors.primary | default('#1d6ae5') }};
-      --secondary: {{ settings.colors.secondary | default('#ff6584') }};
-      --bg: {{ settings.colors.background | default('#ffffff') }};
-      --text: {{ settings.colors.text | default('#333333') }};
-      --font-base: '{{ settings.typography.font_family | default('Cairo') }}', sans-serif;
-    }
-  </style>
+    {# CSS Variables from Salla color picker #}
+    <style>
+        :root {
+            --font-main         : '{{ theme.font.name }}';
+            --color-primary     : {{ theme.color.primary }};
+            --color-primary-dark: {{ theme.color.darker(0.15) }};
+            --color-primary-light: {{ theme.color.lighter(0.15) }};
+            --color-primary-reverse: {{ theme.color.reverse_text }};
+        }
+    </style>
 
-  {% block head %}{% endblock %}
-
-  {# Salla Analytics / Scripts Hook #}
-  {{ store_analytics() }}
+    {% hook 'head:end' %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body id="app" class="overflow-x-hidden {% block body_class %}{% endblock %} {% hook 'body:classes' %}">
 
-  {# Header #}
-  {% include 'components/header/index.twig' %}
+    {% hook 'body:start' %}
 
-  {# Main Content #}
-  <main id="main-content" class="main-content" role="main">
-    {% block content %}{% endblock %}
-  </main>
+    {# Header Component #}
+    {% component 'header.header' %}
 
-  {# Footer #}
-  {% include 'components/footer/index.twig' %}
+    {# Main Content #}
+    <main id="main-content" role="main">
+        {% block content %}{% endblock %}
+    </main>
 
-  {# Toast Container #}
-  <div class="toast-container" aria-live="polite"></div>
+    {# Footer Component #}
+    {% component 'footer.footer' %}
 
-  {# Salla Web Components & SDK #}
-  <script type="module" src="https://cdn.salla.network/js/twilight.js"></script>
+    {% hook 'body:end' %}
 
-  {# Theme JS #}
-  <script src="{{ 'js/theme.js' | asset }}" defer></script>
+    {# Salla Web Components #}
+    <salla-offer-modal></salla-offer-modal>
+    <salla-search></salla-search>
 
-  {% block scripts %}{% endblock %}
+    {% if user.type == 'guest' %}
+        <salla-login-modal></salla-login-modal>
+    {% endif %}
+
+    {# Theme compiled JS #}
+    <script defer crossorigin="anonymous" src="{{ 'app.js' | asset }}"></script>
+
+    {% block scripts %}{% endblock %}
 
 </body>
 </html>
