@@ -6,7 +6,7 @@
 {% block og_description %}{{ product.description | striptags | truncate(160) }}{% endblock %}
 {% block og_image %}{{ product.main_image }}{% endblock %}
 
-{% block head %}
+{% block page_head %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
