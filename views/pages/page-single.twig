@@ -1,0 +1,30 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}{{ page.title }} | {{ store.name }}{% endblock %}
+{% block description %}{{ page.content | striptags | truncate(160) }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding:40px 20px;">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ page.title }}</li>
+    </ol>
+  </nav>
+
+  <article style="max-width:900px;margin:32px auto;" itemscope itemtype="https://schema.org/WebPage">
+    <h1 style="font-size:2.2rem;margin-bottom:24px;" itemprop="name">{{ page.title }}</h1>
+    {% if page.updated_at is defined %}
+      <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border);">
+        <i class="fas fa-clock"></i> آخر تحديث: {{ page.updated_at | date("d/m/Y") }}
+      </p>
+    {% endif %}
+    <div class="page-content" style="line-height:2;font-size:1rem;" itemprop="text">
+      {{ page.content | raw }}
+    </div>
+  </article>
+
+</div>
+{% endblock %}
+

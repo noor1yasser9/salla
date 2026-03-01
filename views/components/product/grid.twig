@@ -1,0 +1,14 @@
+{% if products is defined and products | length %}
+<div class="products-grid">
+  {% for product in products %}
+    {% include 'components/product/card.twig' with { 'product': product } %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-icon">🛍️</div>
+  <h3>{{ trans('product.no_products') }}</h3>
+  <a href="{{ store.url }}/products" class="btn btn-primary">{{ trans('common.view_all') }}</a>
+</div>
+{% endif %}
+

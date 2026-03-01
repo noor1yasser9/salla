@@ -1,0 +1,65 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}{{ trans('blog.title') }} | {{ store.name }}{% endblock %}
+{% block description %}{{ trans('blog.title') }} - {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding:40px 20px;">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ trans('blog.title') }}</li>
+    </ol>
+  </nav>
+
+  <div class="section-header" style="margin-top:24px;">
+    <h1 class="section-title">{{ trans('blog.title') }}</h1>
+  </div>
+
+  {% if posts is defined and posts | length %}
+  <div class="blog-grid" style="margin-top:32px;">
+    {% for post in posts %}
+    <article class="blog-card" itemscope itemtype="https://schema.org/BlogPosting">
+      {% if post.image %}
+      <a href="{{ post.url }}" class="blog-card-image">
+        <img src="{{ post.image }}" alt="{{ post.title }}" loading="lazy" itemprop="image">
+      </a>
+      {% endif %}
+      <div class="blog-card-body">
+        <div class="blog-card-meta">
+          {% if post.author is defined %}<span><i class="fas fa-user-circle"></i> {{ post.author }}</span>{% endif %}
+          {% if post.published_at is defined %}<span><i class="fas fa-calendar"></i> {{ post.published_at | date("d/m/Y") }}</span>{% endif %}
+          {% if post.category is defined %}<span><i class="fas fa-tag"></i> {{ post.category.name }}</span>{% endif %}
+        </div>
+        <h2 class="blog-card-title" itemprop="headline">
+          <a href="{{ post.url }}">{{ post.title }}</a>
+        </h2>
+        {% if post.excerpt is defined %}
+          <p class="blog-card-excerpt" itemprop="description">{{ post.excerpt | truncate(120) }}</p>
+        {% endif %}
+        <a href="{{ post.url }}" class="btn btn-outline btn-sm" style="margin-top:16px;">{{ trans('blog.read_more') }}</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  {# Pagination #}
+  {% if pagination is defined %}
+  <nav class="pagination" aria-label="Pagination">
+    {% if pagination.prev_url %}<a href="{{ pagination.prev_url }}" class="page-btn"><i class="fas fa-chevron-right"></i></a>{% endif %}
+    {% for page in pagination.pages %}<a href="{{ page.url }}" class="page-btn {% if page.active %}active{% endif %}">{{ page.number }}</a>{% endfor %}
+    {% if pagination.next_url %}<a href="{{ pagination.next_url }}" class="page-btn"><i class="fas fa-chevron-left"></i></a>{% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">📝</div>
+    <h3>{{ trans('blog.no_posts') }}</h3>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+

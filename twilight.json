@@ -1,0 +1,102 @@
+{
+  "name": "Salla Nova",
+  "version": "1.0.0",
+  "author": "Salla Developer",
+  "description": "A modern and clean Salla theme that displays products, categories, brands, and more.",
+  "settings": {
+    "colors": {
+      "primary": {
+        "label": "Primary Color",
+        "type": "color",
+        "default": "#6c63ff"
+      },
+      "secondary": {
+        "label": "Secondary Color",
+        "type": "color",
+        "default": "#ff6584"
+      },
+      "background": {
+        "label": "Background Color",
+        "type": "color",
+        "default": "#ffffff"
+      },
+      "text": {
+        "label": "Text Color",
+        "type": "color",
+        "default": "#333333"
+      }
+    },
+    "typography": {
+      "font_family": {
+        "label": "Font Family",
+        "type": "select",
+        "default": "Cairo",
+        "options": [
+          { "value": "Cairo", "label": "Cairo" },
+          { "value": "Tajawal", "label": "Tajawal" },
+          { "value": "Almarai", "label": "Almarai" },
+          { "value": "Roboto", "label": "Roboto" }
+        ]
+      },
+      "base_font_size": {
+        "label": "Base Font Size",
+        "type": "range",
+        "default": 16,
+        "min": 12,
+        "max": 24
+      }
+    },
+    "layout": {
+      "products_per_row": {
+        "label": "Products Per Row",
+        "type": "select",
+        "default": "4",
+        "options": [
+          { "value": "2", "label": "2 Products" },
+          { "value": "3", "label": "3 Products" },
+          { "value": "4", "label": "4 Products" }
+        ]
+      },
+      "show_breadcrumb": {
+        "label": "Show Breadcrumb",
+        "type": "checkbox",
+        "default": true
+      }
+    },
+    "header": {
+      "sticky": {
+        "label": "Sticky Header",
+        "type": "checkbox",
+        "default": true
+      },
+      "show_search": {
+        "label": "Show Search Bar",
+        "type": "checkbox",
+        "default": true
+      }
+    },
+    "home": {
+      "show_banner": {
+        "label": "Show Hero Banner",
+        "type": "checkbox",
+        "default": true
+      },
+      "show_categories": {
+        "label": "Show Categories Section",
+        "type": "checkbox",
+        "default": true
+      },
+      "show_featured_products": {
+        "label": "Show Featured Products",
+        "type": "checkbox",
+        "default": true
+      },
+      "show_brands": {
+        "label": "Show Brands Section",
+        "type": "checkbox",
+        "default": true
+      }
+    }
+  }
+}
+

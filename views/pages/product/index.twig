@@ -1,0 +1,151 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}
+  {% if category is defined %}{{ category.name }} - {% endif %}{{ trans('header.categories') }} | {{ store.name }}
+{% endblock %}
+{% block description %}
+  {% if category is defined %}{{ category.description }}{% else %}{{ store.description }}{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {# Breadcrumb #}
+  {% if settings.layout.show_breadcrumb %}
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
+      {% if category is defined and category.parent is defined %}
+        <li class="breadcrumb-item"><a href="{{ category.parent.url }}">{{ category.parent.name }}</a></li>
+      {% endif %}
+      {% if category is defined %}
+        <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+      {% else %}
+        <li class="breadcrumb-item active" aria-current="page">{{ trans('header.categories') }}</li>
+      {% endif %}
+    </ol>
+  </nav>
+  {% endif %}
+
+  <div style="display:grid;grid-template-columns:260px 1fr;gap:32px;padding:32px 0;">
+
+    {# ── Sidebar Filters ───────────────────────────────────────────────── #}
+    <aside class="filters-sidebar" aria-label="Filters">
+
+      {# Mobile Filter Toggle #}
+      <button class="btn btn-outline btn-sm filters-toggle" style="width:100%;margin-bottom:16px;display:none;">
+        <i class="fas fa-sliders-h"></i> الفلاتر
+      </button>
+
+      {# Category Info #}
+      {% if category is defined %}
+      <div style="margin-bottom:24px;">
+        {% if category.image %}
+          <img src="{{ category.image }}" alt="{{ category.name }}" style="width:100%;border-radius:var(--radius);margin-bottom:12px;">
+        {% endif %}
+        <h2 style="font-size:1.2rem;">{{ category.name }}</h2>
+        {% if category.description %}
+          <p style="font-size:0.875rem;color:var(--text-muted);margin-top:8px;">{{ category.description }}</p>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {# Sub-categories #}
+      {% if sub_categories is defined and sub_categories | length %}
+      <div class="filter-group" style="margin-bottom:24px;">
+        <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primary);">التصنيفات الفرعية</h3>
+        <ul>
+          {% for sub in sub_categories %}
+          <li>
+            <a href="{{ sub.url }}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;font-size:0.875rem;border-bottom:1px solid var(--border);">
+              <span>{{ sub.name }}</span>
+              {% if sub.products_count is defined %}
+                <span style="background:var(--bg-alt);border-radius:50px;padding:2px 8px;font-size:0.75rem;">{{ sub.products_count }}</span>
+              {% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {# Price Filter #}
+      <div class="filter-group" style="margin-bottom:24px;">
+        <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primary);">السعر</h3>
+        <salla-price-filter></salla-price-filter>
+      </div>
+
+      {# Brand Filter #}
+      {% if brands is defined and brands | length %}
+      <div class="filter-group" style="margin-bottom:24px;">
+        <h3 style="font-size:0.95rem;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--primary);">{{ trans('header.brands') }}</h3>
+        <ul>
+          {% for brand in brands %}
+          <li style="margin-bottom:6px;">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.875rem;">
+              <input type="checkbox" name="brand[]" value="{{ brand.id }}"> {{ brand.name }}
+            </label>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+    </aside>
+
+    {# ── Products Main Area ────────────────────────────────────────────── #}
+    <div>
+
+      {# Toolbar #}
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding:16px;background:var(--bg-alt);border-radius:var(--radius);flex-wrap:wrap;gap:12px;">
+        <div>
+          {% if products is defined %}
+            <span style="font-size:0.9rem;color:var(--text-muted);">{{ products | length }} منتج</span>
+          {% endif %}
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <label style="font-size:0.875rem;color:var(--text-muted);">ترتيب:</label>
+          <select style="padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:0.875rem;" onchange="window.location.href=this.value">
+            <option value="?sort=newest" {% if request.query.sort == 'newest' %}selected{% endif %}>الأحدث</option>
+            <option value="?sort=price_asc" {% if request.query.sort == 'price_asc' %}selected{% endif %}>السعر: الأقل</option>
+            <option value="?sort=price_desc" {% if request.query.sort == 'price_desc' %}selected{% endif %}>السعر: الأعلى</option>
+            <option value="?sort=bestselling" {% if request.query.sort == 'bestselling' %}selected{% endif %}>الأكثر مبيعاً</option>
+            <option value="?sort=featured" {% if request.query.sort == 'featured' %}selected{% endif %}>المميزة</option>
+          </select>
+          {# Grid / List Toggle #}
+          <div style="display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
+            <button class="btn btn-sm" style="border-radius:0;border:none;" data-view="grid" title="Grid View"><i class="fas fa-th-large"></i></button>
+            <button class="btn btn-sm" style="border-radius:0;border:none;border-right:1px solid var(--border);" data-view="list" title="List View"><i class="fas fa-list"></i></button>
+          </div>
+        </div>
+      </div>
+
+      {# Products Grid #}
+      {% include 'components/product/grid.twig' with { 'products': products } %}
+
+      {# Pagination #}
+      {% if pagination is defined %}
+      <nav class="pagination" aria-label="Pagination">
+        {% if pagination.prev_url %}
+          <a href="{{ pagination.prev_url }}" class="page-btn" aria-label="Previous">
+            <i class="fas fa-chevron-right"></i>
+          </a>
+        {% endif %}
+        {% for page in pagination.pages %}
+          <a href="{{ page.url }}" class="page-btn {% if page.active %}active{% endif %}" aria-current="{{ page.active ? 'page' : 'false' }}">
+            {{ page.number }}
+          </a>
+        {% endfor %}
+        {% if pagination.next_url %}
+          <a href="{{ pagination.next_url }}" class="page-btn" aria-label="Next">
+            <i class="fas fa-chevron-left"></i>
+          </a>
+        {% endif %}
+      </nav>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,53 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}{{ trans('customer.notifications') }} | {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container customer-page">
+  <div class="customer-grid">
+
+    {# Sidebar #}
+    <aside class="customer-sidebar">
+      <nav class="customer-nav">
+        <a href="{{ store.url }}/customer/profile"><i class="fas fa-user"></i> {{ trans('customer.profile') }}</a>
+        <a href="{{ store.url }}/orders"><i class="fas fa-box"></i> {{ trans('orders.title') }}</a>
+        <a href="{{ store.url }}/wishlist"><i class="far fa-heart"></i> {{ trans('customer.wishlist') }}</a>
+        <a href="{{ store.url }}/customer/notifications" class="active"><i class="fas fa-bell"></i> {{ trans('customer.notifications') }}</a>
+      </nav>
+    </aside>
+
+    {# Notifications Content #}
+    <div class="customer-content">
+      <h2 style="font-size:1.4rem;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid var(--primary);">{{ trans('customer.notifications') }}</h2>
+
+      {% if notifications is defined and notifications | length %}
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          {% for notification in notifications %}
+          <div style="display:flex;gap:16px;padding:16px;border:1px solid var(--border);border-radius:var(--radius);background:{% if not notification.is_read %}rgba(108,99,255,0.04){% else %}var(--bg){% endif %};">
+            <div style="width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="fas fa-bell"></i>
+            </div>
+            <div style="flex:1;">
+              <div style="font-weight:{% if not notification.is_read %}700{% else %}400{% endif %};margin-bottom:4px;">{{ notification.title }}</div>
+              <div style="font-size:0.875rem;color:var(--text-muted);">{{ notification.message }}</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">{{ notification.created_at | date("d/m/Y H:i") }}</div>
+            </div>
+            {% if not notification.is_read %}
+              <span style="width:10px;height:10px;border-radius:50%;background:var(--primary);flex-shrink:0;margin-top:6px;"></span>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">🔔</div>
+          <h3>{{ trans('customer.no_notifications') }}</h3>
+          <p style="color:var(--text-muted);">ستظهر هنا إشعاراتك عند وصولها</p>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

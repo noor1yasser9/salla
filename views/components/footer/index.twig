@@ -1,0 +1,109 @@
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+
+      {# Brand Column #}
+      <div class="footer-widget">
+        <div class="footer-brand">
+          {% if store.logo %}
+            <img src="{{ store.logo }}" alt="{{ store.name }}" height="48" style="margin-bottom:12px;filter:brightness(0) invert(1);">
+          {% else %}
+            <div class="logo">{{ store.name }}</div>
+          {% endif %}
+          <p>{{ store.description | default(trans('footer.about')) }}</p>
+        </div>
+        {# Social Media #}
+        <div class="footer-social" aria-label="Social media links">
+          {% if store.social.twitter %}<a href="{{ store.social.twitter }}" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a>{% endif %}
+          {% if store.social.instagram %}<a href="{{ store.social.instagram }}" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>{% endif %}
+          {% if store.social.snapchat %}<a href="{{ store.social.snapchat }}" target="_blank" rel="noopener" aria-label="Snapchat"><i class="fab fa-snapchat-ghost"></i></a>{% endif %}
+          {% if store.social.facebook %}<a href="{{ store.social.facebook }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>{% endif %}
+          {% if store.social.youtube %}<a href="{{ store.social.youtube }}" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>{% endif %}
+          {% if store.social.tiktok %}<a href="{{ store.social.tiktok }}" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>{% endif %}
+        </div>
+      </div>
+
+      {# Quick Links #}
+      <div class="footer-widget">
+        <h4>{{ trans('footer.about') }}</h4>
+        <ul class="footer-links">
+          <li><a href="{{ store.url }}/page/about">{{ trans('footer.about') }}</a></li>
+          <li><a href="{{ store.url }}/page/contact">{{ trans('footer.contact') }}</a></li>
+          <li><a href="{{ store.url }}/page/terms">{{ trans('footer.terms') }}</a></li>
+          <li><a href="{{ store.url }}/page/privacy">{{ trans('footer.privacy') }}</a></li>
+          <li><a href="{{ store.url }}/page/shipping">{{ trans('footer.shipping') }}</a></li>
+          <li><a href="{{ store.url }}/page/returns">{{ trans('footer.returns') }}</a></li>
+          <li><a href="{{ store.url }}/blog">{{ trans('blog.title') }}</a></li>
+        </ul>
+      </div>
+
+      {# Categories #}
+      <div class="footer-widget">
+        <h4>{{ trans('header.categories') }}</h4>
+        <ul class="footer-links">
+          {% if categories is defined %}
+            {% for category in categories | slice(0, 7) %}
+              <li><a href="{{ category.url }}">{{ category.name }}</a></li>
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
+
+      {# Newsletter & Contact #}
+      <div class="footer-widget">
+        <h4>{{ trans('footer.newsletter') }}</h4>
+        <p style="font-size:0.875rem;margin-bottom:16px;opacity:0.8;">ابق على اطلاع بأحدث العروض والمنتجات</p>
+        <salla-newsletter>
+          <form class="footer-newsletter" onsubmit="return false;">
+            <input type="email" placeholder="{{ trans('footer.newsletter_placeholder') }}" aria-label="{{ trans('footer.newsletter') }}">
+            <button type="submit" class="btn btn-primary btn-full" style="border-radius:0 0 var(--radius-sm) var(--radius-sm);">
+              {{ trans('footer.newsletter_subscribe') }}
+            </button>
+          </form>
+        </salla-newsletter>
+
+        {# Contact Info #}
+        <div style="margin-top:20px;">
+          {% if store.phone %}
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:0.875rem;">
+            <i class="fas fa-phone" style="color:var(--primary);"></i>
+            <a href="tel:{{ store.phone }}">{{ store.phone }}</a>
+          </div>
+          {% endif %}
+          {% if store.email %}
+          <div style="display:flex;align-items:center;gap:8px;font-size:0.875rem;">
+            <i class="fas fa-envelope" style="color:var(--primary);"></i>
+            <a href="mailto:{{ store.email }}">{{ store.email }}</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>{# /.footer-grid #}
+  </div>
+
+  {# Payment Methods & App Store Badges #}
+  <div style="background:rgba(0,0,0,0.2);padding:20px 0;">
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:0.8rem;opacity:0.7;">وسائل الدفع المقبولة:</span>
+        <img src="{{ 'images/payment-methods.png' | asset }}" alt="Payment Methods" height="28" loading="lazy" onerror="this.style.display='none'">
+        <span style="font-size:1.5rem;opacity:0.6;">💳 🏦 💵</span>
+      </div>
+      <div style="display:flex;gap:10px;">
+        {% if store.app.ios %}<a href="{{ store.app.ios }}" target="_blank" rel="noopener"><img src="{{ 'images/app-store.svg' | asset }}" alt="App Store" height="32" loading="lazy" onerror="this.parentElement.style.display='none'"></a>{% endif %}
+        {% if store.app.android %}<a href="{{ store.app.android }}" target="_blank" rel="noopener"><img src="{{ 'images/google-play.svg' | asset }}" alt="Google Play" height="32" loading="lazy" onerror="this.parentElement.style.display='none'"></a>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  {# Footer Bottom #}
+  <div class="footer-bottom">
+    <div class="container">
+      <p>© {{ "now"|date("Y") }} {{ store.name }}. {{ trans('footer.rights') }}</p>
+      <p style="opacity:0.6;font-size:0.8rem;">Powered by <a href="https://salla.com" target="_blank" rel="noopener" style="color:var(--primary);">Salla</a></p>
+    </div>
+  </div>
+
+</footer>
+

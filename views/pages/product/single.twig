@@ -1,0 +1,237 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}{{ product.name }} | {{ store.name }}{% endblock %}
+{% block description %}{{ product.description | striptags | truncate(160) }}{% endblock %}
+{% block og_title %}{{ product.name }}{% endblock %}
+{% block og_description %}{{ product.description | striptags | truncate(160) }}{% endblock %}
+{% block og_image %}{{ product.main_image }}{% endblock %}
+
+{% block head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "{{ product.name | e('js') }}",
+  "image": "{{ product.main_image }}",
+  "description": "{{ product.description | striptags | truncate(200) | e('js') }}",
+  "sku": "{{ product.sku }}",
+  "brand": { "@type": "Brand", "name": "{{ product.brand.name | default(store.name) | e('js') }}" },
+  "offers": {
+    "@type": "Offer",
+    "price": "{{ product.price }}",
+    "priceCurrency": "{{ store.currency }}",
+    "availability": "https://schema.org/{{ product.is_available ? 'InStock' : 'OutOfStock' }}"
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {# Breadcrumb #}
+  {% if settings.layout.show_breadcrumb %}
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
+      {% if product.category is defined %}
+        <li class="breadcrumb-item"><a href="{{ product.category.url }}">{{ product.category.name }}</a></li>
+      {% endif %}
+      <li class="breadcrumb-item active" aria-current="page">{{ product.name | truncate(40) }}</li>
+    </ol>
+  </nav>
+  {% endif %}
+
+  <div class="product-single">
+    <div class="product-single-grid">
+
+      {# ── Gallery ─────────────────────────────────────────────────────── #}
+      <div class="product-gallery">
+        <div class="product-gallery-main">
+          <img
+            id="main-product-image"
+            src="{{ product.main_image }}"
+            alt="{{ product.name }}"
+            loading="eager"
+            width="600" height="600"
+          >
+        </div>
+        {% if product.images is defined and product.images | length > 1 %}
+        <div class="product-gallery-thumbs">
+          {% for image in product.images %}
+          <div class="product-gallery-thumb {% if loop.first %}active{% endif %}">
+            <img src="{{ image.url }}" alt="{{ product.name }} - صورة {{ loop.index }}" loading="lazy" width="80" height="80">
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      {# ── Product Info ─────────────────────────────────────────────────── #}
+      <div class="product-info">
+
+        {# Brand #}
+        {% if product.brand is defined and product.brand %}
+          <div class="product-info-brand">
+            <a href="{{ product.brand.url }}">{{ product.brand.name }}</a>
+          </div>
+        {% endif %}
+
+        {# Name #}
+        <h1 class="product-info-name" itemprop="name">{{ product.name }}</h1>
+
+        {# Rating #}
+        {% if product.rating is defined %}
+        <div class="product-info-rating">
+          {% for i in 1..5 %}
+            <i class="fa{% if i <= product.rating %}s{% else %}r{% endif %} fa-star" style="color:#ffc107;"></i>
+          {% endfor %}
+          {% if product.reviews_count is defined %}
+            <span style="font-size:0.875rem;color:var(--text-muted);">({{ product.reviews_count }} تقييم)</span>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {# Price #}
+        <div class="product-info-price">
+          <span class="current">{{ product.price | money }}</span>
+          {% if product.old_price is defined and product.old_price and product.old_price != product.price %}
+            <span class="old">{{ product.old_price | money }}</span>
+            {% set discount = ((product.old_price - product.price) / product.old_price * 100) | round %}
+            <span class="discount-badge">وفّر {{ discount }}%</span>
+          {% endif %}
+        </div>
+
+        {# Stock #}
+        <div class="product-info-stock">
+          {% if product.is_available %}
+            <i class="fas fa-check-circle stock-in"></i>
+            <span class="stock-in">{{ trans('product.in_stock') }}</span>
+            {% if product.stock is defined and product.stock < 10 %}
+              <span style="color:var(--secondary);font-size:0.85rem;">(كمية محدودة: {{ product.stock }} قطعة)</span>
+            {% endif %}
+          {% else %}
+            <i class="fas fa-times-circle stock-out"></i>
+            <span class="stock-out">{{ trans('product.out_of_stock') }}</span>
+          {% endif %}
+        </div>
+
+        {# Short Description #}
+        {% if product.short_description is defined %}
+          <div style="font-size:0.95rem;color:var(--text-muted);margin-bottom:20px;line-height:1.8;">
+            {{ product.short_description }}
+          </div>
+        {% endif %}
+
+        {# Product Options (variants) #}
+        {% if product.options is defined and product.options | length %}
+        <div class="product-options">
+          <salla-product-options product-id="{{ product.id }}">
+            {% for option in product.options %}
+            <div style="margin-bottom:16px;">
+              <label for="option-{{ option.id }}">{{ option.name }}</label>
+              <select id="option-{{ option.id }}" name="option[{{ option.id }}]">
+                <option value="">{{ trans('product.choose_option') }} {{ option.name }}</option>
+                {% for value in option.values %}
+                  <option value="{{ value.id }}">{{ value.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            {% endfor %}
+          </salla-product-options>
+        </div>
+        {% endif %}
+
+        {# Quantity #}
+        {% if product.is_available %}
+        <div class="product-quantity">
+          <label style="font-weight:600;">{{ trans('product.quantity') }}:</label>
+          <div class="quantity-control">
+            <button class="quantity-btn qty-minus" type="button" aria-label="Decrease quantity">−</button>
+            <input class="quantity-input" type="number" value="1" min="1" max="{{ product.stock | default(999) }}" aria-label="Quantity" id="product-qty">
+            <button class="quantity-btn qty-plus" type="button" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+        {% endif %}
+
+        {# Actions #}
+        <div class="product-actions">
+          {% if product.is_available %}
+            <salla-add-product-button product-id="{{ product.id }}" class="btn btn-primary">
+              <i class="fas fa-shopping-cart"></i> {{ trans('common.add_to_cart') }}
+            </salla-add-product-button>
+            <salla-buy-now-button product-id="{{ product.id }}" class="btn btn-secondary">
+              <i class="fas fa-bolt"></i> {{ trans('common.buy_now') }}
+            </salla-buy-now-button>
+          {% else %}
+            <button class="btn btn-outline" disabled style="flex:1;">{{ trans('product.out_of_stock') }}</button>
+          {% endif %}
+          <salla-button fill="none" shape="icon" data-id="{{ product.id }}" aria-label="{{ trans('common.add_to_wishlist') }}" style="width:48px;border:2px solid var(--border);border-radius:var(--radius-sm);">
+            <i class="far fa-heart" style="font-size:1.2rem;"></i>
+          </salla-button>
+        </div>
+
+        {# Product Meta #}
+        <div style="border-top:1px solid var(--border);padding-top:20px;font-size:0.875rem;color:var(--text-muted);">
+          {% if product.sku %}<p style="margin-bottom:6px;"><strong>{{ trans('product.sku') }}:</strong> {{ product.sku }}</p>{% endif %}
+          {% if product.category is defined %}<p style="margin-bottom:6px;"><strong>{{ trans('product.category') }}:</strong> <a href="{{ product.category.url }}">{{ product.category.name }}</a></p>{% endif %}
+          {% if product.brand is defined %}<p><strong>{{ trans('product.brand') }}:</strong> <a href="{{ product.brand.url }}">{{ product.brand.name }}</a></p>{% endif %}
+        </div>
+
+        {# Share #}
+        <div style="display:flex;align-items:center;gap:12px;margin-top:20px;">
+          <span style="font-size:0.875rem;font-weight:600;">{{ trans('product.share_product') }}:</span>
+          <a href="https://twitter.com/intent/tweet?url={{ request.url | url_encode }}&text={{ product.name | url_encode }}" target="_blank" rel="noopener" style="color:#1da1f2;"><i class="fab fa-twitter fa-lg"></i></a>
+          <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url | url_encode }}" target="_blank" rel="noopener" style="color:#1877f2;"><i class="fab fa-facebook fa-lg"></i></a>
+          <a href="https://wa.me/?text={{ (product.name ~ ' ' ~ request.url) | url_encode }}" target="_blank" rel="noopener" style="color:#25d366;"><i class="fab fa-whatsapp fa-lg"></i></a>
+        </div>
+
+      </div>{# /.product-info #}
+    </div>{# /.product-single-grid #}
+
+    {# ── Product Tabs ─────────────────────────────────────────────────── #}
+    <div class="product-tabs" style="margin-top:48px;">
+      <div class="tabs-nav">
+        <button class="tab-btn active" data-tab="tab-description">{{ trans('product.description') }}</button>
+        {% if product.specifications is defined and product.specifications | length %}
+          <button class="tab-btn" data-tab="tab-specs">{{ trans('product.specifications') }}</button>
+        {% endif %}
+        <button class="tab-btn" data-tab="tab-reviews">{{ trans('product.reviews') }}{% if product.reviews_count is defined %} ({{ product.reviews_count }}){% endif %}</button>
+      </div>
+
+      <div id="tab-description" class="tab-content active" style="line-height:1.9;color:var(--text);">
+        {{ product.description | raw }}
+      </div>
+
+      {% if product.specifications is defined and product.specifications | length %}
+      <div id="tab-specs" class="tab-content">
+        <table style="width:100%;border-collapse:collapse;">
+          {% for spec in product.specifications %}
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:12px 16px;font-weight:600;width:40%;background:var(--bg-alt);">{{ spec.name }}</td>
+            <td style="padding:12px 16px;">{{ spec.value }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      {% endif %}
+
+      <div id="tab-reviews" class="tab-content">
+        <salla-ratings-reviews product-id="{{ product.id }}"></salla-ratings-reviews>
+      </div>
+    </div>
+
+    {# ── Related Products ─────────────────────────────────────────────── #}
+    {% if related_products is defined and related_products | length %}
+    <section style="margin-top:60px;" aria-labelledby="related-products-title">
+      <div class="section-header">
+        <h2 class="section-title" id="related-products-title">{{ trans('product.related_products') }}</h2>
+      </div>
+      {% include 'components/product/grid.twig' with { 'products': related_products } %}
+    </section>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+

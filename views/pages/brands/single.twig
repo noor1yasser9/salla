@@ -1,0 +1,58 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}{{ brand.name }} | {{ trans('brands.title') }} | {{ store.name }}{% endblock %}
+{% block description %}{{ brand.description | default(brand.name ~ ' - ' ~ store.name) }}{% endblock %}
+{% block og_image %}{{ brand.logo }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding:40px 20px;">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
+      <li class="breadcrumb-item"><a href="{{ store.url }}/brands">{{ trans('brands.title') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ brand.name }}</li>
+    </ol>
+  </nav>
+
+  {# Brand Header #}
+  <div style="display:flex;align-items:center;gap:28px;padding:32px;background:var(--bg-alt);border-radius:var(--radius);margin:24px 0 32px;">
+    {% if brand.logo %}
+      <img src="{{ brand.logo }}" alt="{{ brand.name }}" width="140" height="80" style="object-fit:contain;">
+    {% endif %}
+    <div>
+      <h1 style="font-size:2rem;margin-bottom:8px;">{{ brand.name }}</h1>
+      {% if brand.description %}
+        <p style="color:var(--text-muted);line-height:1.8;">{{ brand.description }}</p>
+      {% endif %}
+      {% if brand.products_count is defined %}
+        <p style="font-size:0.875rem;color:var(--text-muted);margin-top:8px;">{{ brand.products_count }} {{ trans('brands.products') }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {# Brand Products #}
+  <div class="section-header">
+    <h2 class="section-title">منتجات {{ brand.name }}</h2>
+  </div>
+
+  {% include 'components/product/grid.twig' with { 'products': products } %}
+
+  {# Pagination #}
+  {% if pagination is defined %}
+  <nav class="pagination" aria-label="Pagination">
+    {% if pagination.prev_url %}
+      <a href="{{ pagination.prev_url }}" class="page-btn"><i class="fas fa-chevron-right"></i></a>
+    {% endif %}
+    {% for page in pagination.pages %}
+      <a href="{{ page.url }}" class="page-btn {% if page.active %}active{% endif %}">{{ page.number }}</a>
+    {% endfor %}
+    {% if pagination.next_url %}
+      <a href="{{ pagination.next_url }}" class="page-btn"><i class="fas fa-chevron-left"></i></a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+</div>
+{% endblock %}
+

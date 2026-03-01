@@ -1,0 +1,146 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}{{ store.name }} - {{ trans('home.hero_title') }}{% endblock %}
+{% block description %}{{ store.description }}{% endblock %}
+
+{% block content %}
+
+  {# ── Hero Banner ───────────────────────────────────────────────────────── #}
+  {% if settings.home.show_banner %}
+  <section class="hero-section" aria-label="Hero Banner">
+    {% if sliders is defined and sliders | length %}
+      <img src="{{ sliders[0].image }}" alt="{{ sliders[0].title }}" class="hero-bg" loading="eager">
+    {% endif %}
+    <div class="container">
+      <div class="hero-content">
+        <h1>{{ sliders[0].title | default(trans('home.hero_title')) }}</h1>
+        <p>{{ sliders[0].subtitle | default(trans('home.hero_subtitle')) }}</p>
+        <div class="hero-actions">
+          <a href="{{ sliders[0].url | default(store.url ~ '/products') }}" class="btn btn-primary">
+            <i class="fas fa-shopping-bag"></i> {{ trans('home.hero_btn') }}
+          </a>
+          {% if settings.home.show_categories %}
+          <a href="{{ store.url }}/categories" class="btn btn-outline" style="background:rgba(255,255,255,0.15);color:#fff;border-color:rgba(255,255,255,0.5);">
+            {{ trans('header.categories') }}
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {# ── Categories Section ────────────────────────────────────────────────── #}
+  {% if settings.home.show_categories and categories is defined and categories | length %}
+  <section class="categories-section" aria-labelledby="categories-title">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title" id="categories-title">{{ trans('home.categories_title') }}</h2>
+        <a href="{{ store.url }}/categories" class="btn btn-outline btn-sm">{{ trans('common.view_all') }}</a>
+      </div>
+      <div class="categories-grid">
+        {% for category in categories | slice(0, 12) %}
+        <a href="{{ category.url }}" class="category-card" aria-label="{{ category.name }}">
+          {% if category.image %}
+            <img
+              src="{{ category.image }}"
+              alt="{{ category.name }}"
+              class="category-card-img"
+              loading="lazy"
+              width="80" height="80"
+            >
+          {% else %}
+            <div class="category-card-img" style="background:var(--bg-alt);display:flex;align-items:center;justify-content:center;">
+              <i class="fas fa-tag" style="font-size:1.8rem;color:var(--primary);"></i>
+            </div>
+          {% endif %}
+          <span class="category-card-name">{{ category.name }}</span>
+          {% if category.products_count is defined %}
+            <span class="category-card-count">{{ category.products_count }} {{ trans('brands.products') }}</span>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {# ── Featured Products ─────────────────────────────────────────────────── #}
+  {% if settings.home.show_featured_products %}
+  <section class="products-section" aria-labelledby="featured-products-title">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title" id="featured-products-title">{{ trans('home.featured_products') }}</h2>
+        <a href="{{ store.url }}/products?sort=featured" class="btn btn-outline btn-sm">{{ trans('common.view_all') }}</a>
+      </div>
+      {% include 'components/product/grid.twig' with { 'products': featured_products } %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# ── New Arrivals ──────────────────────────────────────────────────────── #}
+  {% if new_products is defined and new_products | length %}
+  <section class="products-section" style="background:var(--bg-alt);" aria-labelledby="new-arrivals-title">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title" id="new-arrivals-title">{{ trans('home.new_arrivals') }}</h2>
+        <a href="{{ store.url }}/products?sort=newest" class="btn btn-outline btn-sm">{{ trans('common.view_all') }}</a>
+      </div>
+      {% include 'components/product/grid.twig' with { 'products': new_products } %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# ── Best Sellers ──────────────────────────────────────────────────────── #}
+  {% if best_sellers is defined and best_sellers | length %}
+  <section class="products-section" aria-labelledby="best-sellers-title">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title" id="best-sellers-title">{{ trans('home.best_sellers') }}</h2>
+        <a href="{{ store.url }}/products?sort=bestselling" class="btn btn-outline btn-sm">{{ trans('common.view_all') }}</a>
+      </div>
+      {% include 'components/product/grid.twig' with { 'products': best_sellers } %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# ── On Sale Products ──────────────────────────────────────────────────── #}
+  {% if sale_products is defined and sale_products | length %}
+  <section class="products-section" style="background:var(--bg-alt);" aria-labelledby="sale-products-title">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title" id="sale-products-title" style="color:var(--secondary);">
+          🔥 {{ trans('home.on_sale') }}
+        </h2>
+        <a href="{{ store.url }}/products?sort=sale" class="btn btn-secondary btn-sm">{{ trans('common.view_all') }}</a>
+      </div>
+      {% include 'components/product/grid.twig' with { 'products': sale_products } %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# ── Brands Section ────────────────────────────────────────────────────── #}
+  {% if settings.home.show_brands and brands is defined and brands | length %}
+  <section class="brands-section" aria-labelledby="brands-title">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title" id="brands-title">{{ trans('home.brands_title') }}</h2>
+        <a href="{{ store.url }}/brands" class="btn btn-outline btn-sm">{{ trans('common.view_all') }}</a>
+      </div>
+      <div class="brands-grid">
+        {% for brand in brands | slice(0, 12) %}
+        <a href="{{ brand.url }}" class="brand-card" aria-label="{{ brand.name }}">
+          {% if brand.logo %}
+            <img src="{{ brand.logo }}" alt="{{ brand.name }}" loading="lazy" width="120" height="60">
+          {% else %}
+            <span style="font-weight:700;color:var(--primary);">{{ brand.name }}</span>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+{% endblock %}
+

@@ -1,0 +1,85 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}{{ trans('orders.details') }} #{{ order.reference_id | default(order.id) }} | {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding:40px 20px;">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
+      <li class="breadcrumb-item"><a href="{{ store.url }}/orders">{{ trans('orders.title') }}</a></li>
+      <li class="breadcrumb-item active">#{{ order.reference_id | default(order.id) }}</li>
+    </ol>
+  </nav>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:24px 0;">
+    <h1 style="font-size:1.6rem;">{{ trans('orders.details') }} #{{ order.reference_id | default(order.id) }}</h1>
+    <span class="order-status status-{{ order.status | lower | replace({' ':'-'}) }}">{{ order.status_name | default(order.status) }}</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:28px;">
+
+    {# Order Items #}
+    <div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        <div style="padding:16px 20px;background:var(--bg-alt);font-weight:700;font-size:0.95rem;border-bottom:1px solid var(--border);">{{ trans('orders.items') }}</div>
+        {% for item in order.items %}
+        <div style="display:flex;gap:16px;padding:16px 20px;border-bottom:1px solid var(--border);">
+          <img src="{{ item.product.thumbnail }}" alt="{{ item.product.name }}" style="width:72px;height:72px;border-radius:var(--radius-sm);object-fit:cover;border:1px solid var(--border);">
+          <div style="flex:1;">
+            <div style="font-weight:600;margin-bottom:4px;">{{ item.product.name }}</div>
+            {% if item.product_option_name is defined %}
+              <div style="font-size:0.8rem;color:var(--text-muted);">{{ item.product_option_name }}</div>
+            {% endif %}
+            <div style="font-size:0.875rem;color:var(--text-muted);margin-top:4px;">الكمية: {{ item.quantity }}</div>
+          </div>
+          <div style="font-weight:700;color:var(--primary);">{{ item.total | money }}</div>
+        </div>
+        {% endfor %}
+      </div>
+
+      {# Shipping Info #}
+      {% if order.shipping is defined %}
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);margin-top:20px;overflow:hidden;">
+        <div style="padding:16px 20px;background:var(--bg-alt);font-weight:700;font-size:0.95rem;border-bottom:1px solid var(--border);">{{ trans('orders.shipping_info') }}</div>
+        <div style="padding:20px;">
+          <p style="font-size:0.9rem;margin-bottom:6px;"><strong>الاسم:</strong> {{ order.shipping.name }}</p>
+          <p style="font-size:0.9rem;margin-bottom:6px;"><strong>العنوان:</strong> {{ order.shipping.address }}</p>
+          <p style="font-size:0.9rem;margin-bottom:6px;"><strong>المدينة:</strong> {{ order.shipping.city }}</p>
+          {% if order.shipping.tracking_number is defined %}
+            <p style="font-size:0.9rem;"><strong>رقم التتبع:</strong> {{ order.shipping.tracking_number }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    {# Order Summary #}
+    <div>
+      <div class="cart-summary">
+        <div class="cart-summary-title">ملخص الطلب</div>
+        <div class="summary-row"><span>المجموع الفرعي</span><span>{{ order.sub_total | money }}</span></div>
+        {% if order.discount is defined and order.discount %}<div class="summary-row" style="color:#28a745;"><span>الخصم</span><span>-{{ order.discount | money }}</span></div>{% endif %}
+        {% if order.shipping_cost is defined %}<div class="summary-row"><span>{{ trans('cart.shipping') }}</span><span>{{ order.shipping_cost > 0 ? order.shipping_cost | money : trans('common.free') }}</span></div>{% endif %}
+        {% if order.tax is defined and order.tax %}<div class="summary-row"><span>{{ trans('cart.tax') }}</span><span>{{ order.tax | money }}</span></div>{% endif %}
+        <div class="summary-row summary-total"><span>{{ trans('orders.order_total') }}</span><span>{{ order.total | money }}</span></div>
+
+        {# Payment Info #}
+        {% if order.payment_method is defined %}
+        <div style="padding-top:16px;margin-top:8px;border-top:1px solid var(--border);">
+          <div style="font-size:0.875rem;margin-bottom:6px;"><strong>طريقة الدفع:</strong> {{ order.payment_method }}</div>
+          {% if order.payment_status is defined %}<div style="font-size:0.875rem;"><strong>حالة الدفع:</strong> {{ order.payment_status }}</div>{% endif %}
+        </div>
+        {% endif %}
+
+        <a href="{{ store.url }}/orders" class="btn btn-outline btn-full" style="margin-top:16px;">
+          <i class="fas fa-arrow-right"></i> {{ trans('orders.title') }}
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

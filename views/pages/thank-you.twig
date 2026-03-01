@@ -1,0 +1,57 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}{{ trans('thank_you.title') }} | {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding:60px 20px;">
+  <div style="max-width:600px;margin:0 auto;text-align:center;">
+
+    {# Success Animation #}
+    <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#28a745,#20c997);display:flex;align-items:center;justify-content:center;margin:0 auto 28px;box-shadow:0 8px 32px rgba(40,167,69,0.25);">
+      <i class="fas fa-check" style="font-size:3rem;color:#fff;"></i>
+    </div>
+
+    <h1 style="font-size:2rem;margin-bottom:12px;color:#28a745;">{{ trans('thank_you.title') }}</h1>
+    <p style="font-size:1.1rem;color:var(--text-muted);margin-bottom:32px;">{{ trans('thank_you.message') }}</p>
+
+    {% if order is defined %}
+    <div style="background:var(--bg-alt);border-radius:var(--radius);padding:28px;margin-bottom:32px;text-align:right;">
+      <h3 style="margin-bottom:16px;font-size:1rem;">تفاصيل الطلب</h3>
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:0.9rem;">
+        <span style="color:var(--text-muted);">{{ trans('thank_you.order_id') }}:</span>
+        <strong>#{{ order.reference_id | default(order.id) }}</strong>
+      </div>
+      {% if order.date is defined %}
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:0.9rem;">
+        <span style="color:var(--text-muted);">تاريخ الطلب:</span>
+        <span>{{ order.date | date("d/m/Y H:i") }}</span>
+      </div>
+      {% endif %}
+      <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:0.9rem;">
+        <span style="color:var(--text-muted);">الإجمالي:</span>
+        <strong style="color:var(--primary);">{{ order.total | money }}</strong>
+      </div>
+      {% if order.status is defined %}
+      <div style="display:flex;justify-content:space-between;font-size:0.9rem;">
+        <span style="color:var(--text-muted);">الحالة:</span>
+        <span class="order-status status-{{ order.status | lower }}">{{ order.status_name | default(order.status) }}</span>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      {% if order is defined %}
+      <a href="{{ store.url }}/orders/{{ order.id }}" class="btn btn-primary">
+        <i class="fas fa-box"></i> {{ trans('thank_you.view_order') }}
+      </a>
+      {% endif %}
+      <a href="{{ store.url }}" class="btn btn-outline">
+        <i class="fas fa-home"></i> {{ trans('thank_you.continue_shopping') }}
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

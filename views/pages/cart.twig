@@ -1,0 +1,112 @@
+{% extends 'layouts/master.twig' %}
+
+{% block title %}{{ trans('cart.title') }} | {{ store.name }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding:40px 20px;">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li class="breadcrumb-item"><a href="{{ store.url }}">الرئيسية</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ trans('cart.title') }}</li>
+    </ol>
+  </nav>
+
+  <h1 style="font-size:1.8rem;margin:24px 0 32px;">
+    {{ trans('cart.title') }}
+    {% if cart.items is defined %}<span style="font-size:1rem;color:var(--text-muted);font-weight:400;">({{ cart.items | length }} {{ trans('cart.items') }})</span>{% endif %}
+  </h1>
+
+  {% if cart is defined and cart.items is defined and cart.items | length %}
+  <div class="cart-grid">
+
+    {# Cart Items #}
+    <div class="cart-items">
+      {% for item in cart.items %}
+      <div class="cart-item" data-item-id="{{ item.id }}">
+        <div class="cart-item-image">
+          <a href="{{ item.product.url }}">
+            <img src="{{ item.product.thumbnail }}" alt="{{ item.product.name }}" loading="lazy">
+          </a>
+        </div>
+        <div>
+          <div class="cart-item-name"><a href="{{ item.product.url }}">{{ item.product.name }}</a></div>
+          {% if item.options is defined and item.options %}
+            <div class="cart-item-options">{{ item.options | join(', ') }}</div>
+          {% endif %}
+          <div class="quantity-control" style="margin-top:12px;display:inline-flex;">
+            <button class="quantity-btn qty-minus">−</button>
+            <input class="quantity-input" type="number" value="{{ item.quantity }}" min="1">
+            <button class="quantity-btn qty-plus">+</button>
+          </div>
+          <div class="cart-item-price" style="margin-top:8px;">{{ (item.price * item.quantity) | money }}</div>
+        </div>
+        <div>
+          <salla-button fill="none" shape="icon" class="btn btn-sm" style="color:#dc3545;" data-remove-item="{{ item.id }}" aria-label="{{ trans('cart.remove_item') }}">
+            <i class="fas fa-trash-alt"></i>
+          </salla-button>
+        </div>
+      </div>
+      {% endfor %}
+
+      <div style="display:flex;gap:12px;margin-top:16px;">
+        <a href="{{ store.url }}/products" class="btn btn-outline"><i class="fas fa-arrow-right"></i> {{ trans('cart.continue_shopping') }}</a>
+      </div>
+    </div>
+
+    {# Order Summary #}
+    <div class="cart-summary">
+      <div class="cart-summary-title">ملخص الطلب</div>
+
+      <div class="summary-row"><span>{{ trans('cart.subtotal') }}</span><span>{{ cart.subtotal | money }}</span></div>
+      {% if cart.discount is defined and cart.discount %}
+        <div class="summary-row" style="color:#28a745;"><span>الخصم</span><span>-{{ cart.discount | money }}</span></div>
+      {% endif %}
+      {% if cart.shipping is defined %}
+        <div class="summary-row"><span>{{ trans('cart.shipping') }}</span><span>{{ cart.shipping > 0 ? cart.shipping | money : trans('common.free') }}</span></div>
+      {% endif %}
+      {% if cart.tax is defined and cart.tax %}
+        <div class="summary-row"><span>{{ trans('cart.tax') }}</span><span>{{ cart.tax | money }}</span></div>
+      {% endif %}
+      <div class="summary-row summary-total"><span>{{ trans('cart.total') }}</span><span>{{ cart.total | money }}</span></div>
+
+      {# Coupon #}
+      <form class="coupon-form" action="{{ store.url }}/cart/coupon" method="post" style="margin:16px 0;">
+        <input type="text" name="code" placeholder="{{ trans('cart.coupon') }}" aria-label="{{ trans('cart.coupon') }}">
+        <button type="submit" class="btn btn-outline">{{ trans('cart.apply_coupon') }}</button>
+      </form>
+
+      <salla-checkout>
+        <a href="{{ store.url }}/checkout" class="btn btn-primary btn-full" style="font-size:1rem;padding:14px;">
+          <i class="fas fa-lock"></i> {{ trans('cart.checkout') }}
+        </a>
+      </salla-checkout>
+
+      {# Trust Badges #}
+      <div style="display:flex;justify-content:center;gap:16px;margin-top:20px;flex-wrap:wrap;">
+        <div style="text-align:center;font-size:0.75rem;color:var(--text-muted);">
+          <i class="fas fa-shield-alt" style="font-size:1.2rem;color:var(--primary);display:block;margin-bottom:4px;"></i>دفع آمن
+        </div>
+        <div style="text-align:center;font-size:0.75rem;color:var(--text-muted);">
+          <i class="fas fa-undo" style="font-size:1.2rem;color:var(--primary);display:block;margin-bottom:4px;"></i>إرجاع سهل
+        </div>
+        <div style="text-align:center;font-size:0.75rem;color:var(--text-muted);">
+          <i class="fas fa-shipping-fast" style="font-size:1.2rem;color:var(--primary);display:block;margin-bottom:4px;"></i>شحن سريع
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon">🛒</div>
+    <h3>{{ trans('cart.empty') }}</h3>
+    <p style="color:var(--text-muted);">لم تضف أي منتجات إلى سلتك بعد</p>
+    <a href="{{ store.url }}/products" class="btn btn-primary">{{ trans('cart.continue_shopping') }}</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
