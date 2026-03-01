@@ -1,4 +1,4 @@
-{% extends 'layouts.master' %}
+{% extends 'layouts/master.twig' %}
 
 {% block title %}
   {% if category is defined %}{{ category.name }} - {% endif %}{{ trans('header.categories') }} | {{ store.name }}
@@ -27,15 +27,20 @@
   </nav>
   {% endif %}
 
-  <div style="display:grid;grid-template-columns:260px 1fr;gap:32px;padding:32px 0;">
+  {# Mobile Filter Button - always visible on mobile #}
+  <div class="mobile-filter-bar">
+    <button class="btn btn-outline btn-sm filters-toggle" aria-expanded="false" aria-controls="filters-sidebar">
+      <i class="fas fa-sliders-h"></i> الفلاتر
+    </button>
+    {% if products is defined %}
+      <span style="font-size:0.875rem;color:var(--text-muted);">{{ products | length }} منتج</span>
+    {% endif %}
+  </div>
+
+  <div class="products-layout" style="display:grid;grid-template-columns:260px 1fr;gap:32px;padding:32px 0;">
 
     {# ── Sidebar Filters ───────────────────────────────────────────────── #}
-    <aside class="filters-sidebar" aria-label="Filters">
-
-      {# Mobile Filter Toggle #}
-      <button class="btn btn-outline btn-sm filters-toggle" style="width:100%;margin-bottom:16px;display:none;">
-        <i class="fas fa-sliders-h"></i> الفلاتر
-      </button>
+    <aside class="filters-sidebar" id="filters-sidebar" aria-label="Filters">
 
       {# Category Info #}
       {% if category is defined %}
@@ -96,8 +101,8 @@
     {# ── Products Main Area ────────────────────────────────────────────── #}
     <div>
 
-      {# Toolbar #}
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding:16px;background:var(--bg-alt);border-radius:var(--radius);flex-wrap:wrap;gap:12px;">
+      {# Toolbar - desktop only #}
+      <div class="products-toolbar" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding:16px;background:var(--bg-alt);border-radius:var(--radius);flex-wrap:wrap;gap:12px;">
         <div>
           {% if products is defined %}
             <span style="font-size:0.9rem;color:var(--text-muted);">{{ products | length }} منتج</span>
@@ -114,8 +119,8 @@
           </select>
           {# Grid / List Toggle #}
           <div style="display:flex;border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;">
-            <button class="btn btn-sm" style="border-radius:0;border:none;" data-view="grid" title="Grid View"><i class="fas fa-th-large"></i></button>
-            <button class="btn btn-sm" style="border-radius:0;border:none;border-right:1px solid var(--border);" data-view="list" title="List View"><i class="fas fa-list"></i></button>
+            <button class="btn btn-sm view-toggle active" data-view="grid" title="عرض شبكي" style="border-radius:0;border:none;"><i class="fas fa-th-large"></i></button>
+            <button class="btn btn-sm view-toggle" data-view="list" title="عرض قائمة" style="border-radius:0;border:none;border-right:1px solid var(--border);"><i class="fas fa-list"></i></button>
           </div>
         </div>
       </div>
@@ -148,4 +153,3 @@
   </div>
 </div>
 {% endblock %}
-

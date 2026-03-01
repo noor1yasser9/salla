@@ -7,55 +7,60 @@
 | position              | int       | Block position index                     |
 #}
 {% set component_id = 'featured-products-' ~ position %}
-<section class="s-block" id="{{ component_id }}" style="padding:48px 0;">
-    <div style="max-width:1280px;margin:0 auto;padding:0 20px;">
+<section class="s-block products-section" id="{{ component_id }}">
+    <div class="container">
 
         {# Section Header #}
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;">
+        <div class="section-header">
             <div>
                 {% if component.title %}
-                    <h2 style="font-size:1.6rem;font-weight:700;position:relative;">
-                        {{ component.title }}
-                        <span style="display:block;width:48px;height:4px;background:var(--color-primary,#1d6ae5);border-radius:2px;margin-top:8px;"></span>
-                    </h2>
+                    <h2 class="section-title">{{ component.title }}</h2>
                 {% endif %}
             </div>
             {% if component.display_all_url and theme.settings.get('is_more_button_enabled') %}
-                <a href="{{ component.display_all_url }}"
-                   style="padding:8px 20px;border:2px solid var(--color-primary,#1d6ae5);border-radius:6px;color:var(--color-primary,#1d6ae5);font-weight:600;font-size:0.875rem;">
+                <a href="{{ component.display_all_url }}" class="btn btn-outline btn-sm">
                     {{ trans('blocks.home.display_all') }}
                 </a>
             {% endif %}
         </div>
 
-        {# Tabs Navigation #}
-        {% if items|length > 1 %}
-        <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:2px solid #e9ecef;flex-wrap:wrap;">
+        {# Tabs Navigation - uses same data-tab system as app.js #}
+        {% if items | length > 1 %}
+        <div class="product-tabs" style="border-top:none;padding-top:0;">
+            <div class="tabs-nav" style="margin-bottom:24px;">
+                {% for section in items %}
+                    <button
+                        class="tab-btn {% if loop.first %}active{% endif %}"
+                        data-tab="{{ component_id }}-{{ section.id }}"
+                    >
+                        {{ section.title }}
+                    </button>
+                {% endfor %}
+            </div>
+
+            {# Tab Contents #}
             {% for section in items %}
-                <button
-                    data-target="{{ component_id }}-{{ section.id }}"
-                    data-component-id="{{ component_id }}"
-                    class="tab-trigger"
-                    style="padding:10px 20px;font-weight:600;cursor:pointer;border:none;background:none;color:{% if loop.first %}var(--color-primary,#1d6ae5){% else %}#666{% endif %};border-bottom:3px solid {% if loop.first %}var(--color-primary,#1d6ae5){% else %}transparent{% endif %};margin-bottom:-2px;transition:all 0.2s;">
-                    {{ section.title }}
-                </button>
+                <div id="{{ component_id }}-{{ section.id }}"
+                     class="tab-content {% if loop.first %}active{% endif %}">
+                    <div class="products-grid">
+                        {% for product in section.products | slice(0, 8) %}
+                            {% include 'pages/partials/product/card.twig' with { 'product': product } %}
+                        {% endfor %}
+                    </div>
+                </div>
             {% endfor %}
         </div>
-        {% endif %}
 
-        {# Products Tabs Content #}
-        {% for section in items %}
-            <div id="{{ component_id }}-{{ section.id }}"
-                 class="tabs__item"
-                 style="{{ loop.first ? '' : 'display:none;' }}">
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
-                    {% for product in section.products | slice(0, 8) %}
+        {% else %}
+            {# Single tab - show directly without nav #}
+            {% if items | length %}
+                <div class="products-grid">
+                    {% for product in items[0].products | slice(0, 8) %}
                         {% include 'pages/partials/product/card.twig' with { 'product': product } %}
                     {% endfor %}
                 </div>
-            </div>
-        {% endfor %}
+            {% endif %}
+        {% endif %}
 
     </div>
 </section>
-

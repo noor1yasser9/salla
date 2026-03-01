@@ -6,6 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{ theme.settings.set('placeholder', 'images/placeholder.png') }}
 
+    {# SEO Meta #}
+    <title>{% block title %}{{ store.name }}{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ store.description }}{% endblock %}">
+
+    {# Open Graph #}
+    <meta property="og:title" content="{% block og_title %}{{ store.name }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ store.description }}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ store.logo }}{% endblock %}">
+    <meta property="og:type" content="website">
+
+    {# Salla required scripts - must load early #}
+    <script defer data-cfasync="false" crossorigin="anonymous" src="{{ 'product-card.js' | asset }}"></script>
+
     {% block head_scripts %}{% endblock %}
 
     <script data-cfasync="false">
@@ -14,7 +27,7 @@
     </script>
 
     {% hook 'head:start' %}
-    {% hook head %}
+    {% block head %}{% endblock %}
 
     {% block styles %}{% endblock %}
 
@@ -28,9 +41,9 @@
     {# CSS Variables from Salla color picker #}
     <style>
         :root {
-            --font-main         : '{{ theme.font.name }}';
-            --color-primary     : {{ theme.color.primary }};
-            --color-primary-dark: {{ theme.color.darker(0.15) }};
+            --font-main          : '{{ theme.font.name }}';
+            --color-primary      : {{ theme.color.primary }};
+            --color-primary-dark : {{ theme.color.darker(0.15) }};
             --color-primary-light: {{ theme.color.lighter(0.15) }};
             --color-primary-reverse: {{ theme.color.reverse_text }};
         }
@@ -66,11 +79,7 @@
     {# Theme compiled JS #}
     <script defer crossorigin="anonymous" src="{{ 'app.js' | asset }}"></script>
 
-    {# Product card web component - loaded after DOM is ready #}
-    <script defer data-cfasync="false" crossorigin="anonymous" src="{{ 'product-card.js' | asset }}"></script>
-
     {% block scripts %}{% endblock %}
 
 </body>
 </html>
-
