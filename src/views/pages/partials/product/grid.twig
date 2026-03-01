@@ -1,7 +1,7 @@
 {% if products is defined and products | length %}
 <div class="products-grid">
   {% for product in products %}
-    {% include 'components/product/card.twig' with { 'product': product } %}
+    {% include 'pages/partials/product/card.twig' with { 'product': product } %}
   {% endfor %}
 </div>
 {% else %}

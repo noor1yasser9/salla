@@ -50,7 +50,7 @@
                  style="{{ loop.first ? '' : 'display:none;' }}">
                 <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
                     {% for product in section.products | slice(0, 8) %}
-                        <custom-salla-product-card product="{{ product | json_encode }}"></custom-salla-product-card>
+                        {% include 'pages/partials/product/card.twig' with { 'product': product } %}
                     {% endfor %}
                 </div>
             </div>

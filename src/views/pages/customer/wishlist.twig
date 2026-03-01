@@ -1,4 +1,4 @@
-{% extends 'layouts/master.twig' %}
+{% extends 'layouts.master' %}
 
 {% block title %}{{ trans('customer.wishlist') }} | {{ store.name }}{% endblock %}
 
@@ -23,7 +23,7 @@
       {% if wishlist is defined and wishlist | length %}
         <div class="products-grid" style="grid-template-columns:repeat(3,1fr);">
           {% for item in wishlist %}
-            {% include 'components/product/card.twig' with { 'product': item.product ?? item } %}
+            {% include 'pages/partials/product/card.twig' with { 'product': item.product ?? item } %}
           {% endfor %}
         </div>
       {% else %}
