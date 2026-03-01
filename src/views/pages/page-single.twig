@@ -1,4 +1,4 @@
-{% extends 'layouts.master' %}
+{% extends 'layouts/master.twig' %}
 
 {% block title %}{{ page.title }} | {{ store.name }}{% endblock %}
 {% block description %}{{ page.content | striptags | truncate(160) }}{% endblock %}

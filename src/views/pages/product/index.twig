@@ -1,4 +1,4 @@
-{% extends 'layouts.master' %}
+{% extends 'layouts/master.twig' %}
 
 {% block title %}
   {% if category is defined %}{{ category.name }} - {% endif %}{{ trans('header.categories') }} | {{ store.name }}

@@ -39,7 +39,7 @@
             <input class="quantity-input" type="number" value="{{ item.quantity }}" min="1">
             <button class="quantity-btn qty-plus">+</button>
           </div>
-          <div class="cart-item-price" style="margin-top:8px;">{{ (item.price * item.quantity) | money }}</div>
+          <div class="cart-item-price" style="margin-top:8px;">{{ ((item.price | default(0)) * (item.quantity | default(1))) | money }}</div>
         </div>
         <div>
           <salla-button fill="none" shape="icon" class="btn btn-sm" style="color:#dc3545;" data-remove-item="{{ item.id }}" aria-label="{{ trans('cart.remove_item') }}">
